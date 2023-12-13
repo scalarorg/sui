@@ -180,6 +180,7 @@ members = [
     "sui-execution/v1/sui-adapter",
     "sui-execution/v1/sui-move-natives",
     "sui-execution/v1/sui-verifier",
+    "scalar/scalar-test-cluster"
 ]
 
 [workspace.package]

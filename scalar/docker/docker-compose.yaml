@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  builder:
+    build:
+      context: ../
+      dockerfile: ./docker/builder.Dockerfile
+      args:
+        # update with git sha of whichever branch you're building on.
+        GIT_REVISION: db24658bc9
+        BUILD_DATE: today
+    image: scalar-builder
+    environment:
+      - LD_PRELOAD
+      - RUST_JSON_LOG=true
+      - RUST_LOG=info
+      - GIT_REVISION=experiment
+      # For stripped binary file
+      - RUSTFLAGS=-C link-arg=-s
+      # don't use debug, it generates volumes of data.
+
+    container_name: scalar-builder
+    restart: unless-stopped
+    working_dir: /scalar
+    # populate your local ./fullnode/config/ directory with fullnode.yaml and genesis.blob for the network you want to use.
+    volumes:
+      - /home/viettai/scalar.org/reth:/reth
+      - /home/viettai/scalar.org/sui:/scalar
+
+  runner:
+    build:
+      context: ../
+      dockerfile: ./docker/runner.Dockerfile
+      args:
+        BUILD_DATE: today
+    image: scalar-runner
+    environment:
+      - LD_PRELOAD
+      - RUST_JSON_LOG=true
+      - RUST_LOG=info
+      # don't use debug, it generates volumes of data.
+    container_name: scalar-runner
+    restart: unless-stopped
+    volumes:
+      - ../configs/scalar:/scalar
+      - ../scripts/entry.sh:/entry.sh
+    ports:
+      - "30303:30303"         # Peering ports
+      - "30303:30303/udp"     # Peering ports
+      - "8545:8545"           # http
+      - "8546:8546"           # ws
+      - "9001:9001"           # Metrics
