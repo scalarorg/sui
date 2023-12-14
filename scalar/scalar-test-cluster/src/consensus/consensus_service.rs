@@ -22,6 +22,7 @@ use tonic::{Response, Status};
 use tracing::{error, info, instrument};
 
 use crate::consensus::consensus_adapter::SubmitToConsensus;
+use crate::consensus::consensus_types::{NsTransaction, ConsensusTransactionWrapper};
 use crate::core::authority::AuthorityState;
 use crate::core::authority::authority_per_epoch_store::AuthorityPerEpochStore;
 use crate::core::authority_server::ValidatorService;
@@ -111,6 +112,8 @@ impl ConsensusService {
             &transaction_in
         );
         let ConsensusTransactionIn { tx_bytes, signatures } = transaction_in;
+        let ns_transaction = NsTransaction::new_reth_transaction(tx_bytes);
+        let transaction_wrapper = ConsensusTransactionWrapper::Namespace(ns_transaction);
         //self.validator_service.handle_transaction_for_testing(transaction.into()).await;
         // if let Ok(cetificate_tran) = self.create_certificate_transaction(transaction) {
         //     // self.validator_service.execute_certificate_for_testing(cetificate_tran).await;
@@ -119,7 +122,7 @@ impl ConsensusService {
         //     self.consensus_adapter.submit_to_consensus(&consensus_transaction, &self.epoch_store).await;
             
         // }
-        // panic!("Received consensus transaction from Reth");
+        let tx_bytes = bcs::to_bytes(&transaction_wrapper).map_err(|err| anyhow!("{:?}", err)).expect("Serialization should not fail.");
         self.consensus_adapter.submit_raw_transaction_to_consensus(tx_bytes, &self.epoch_store).await.map_err(|err| anyhow!(err.to_string()))
     }
 

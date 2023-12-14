@@ -10093,6 +10093,7 @@ dependencies = [
  "rocksdb",
  "serde",
  "serde-reflection",
+ "serde_bytes",
  "serde_json",
  "serde_with",
  "serde_yaml 0.8.26",

@@ -47,6 +47,7 @@ regex.workspace = true
 reqwest.workspace = true
 rocksdb.workspace = true
 serde = { workspace = true, features = ["derive", "rc"] }
+serde_bytes = "0.11.5"
 serde_json.workspace = true
 serde_with.workspace = true
 serde_yaml.workspace = true

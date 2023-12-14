@@ -25,7 +25,7 @@ use sui_types::{
 use tokio::sync::mpsc::UnboundedSender;
 use tracing::{error, instrument, trace, warn};
 
-use crate::core::authority::authority_per_epoch_store::AuthorityPerEpochStore;
+use crate::{core::authority::authority_per_epoch_store::AuthorityPerEpochStore, consensus::consensus_types::NsTransaction};
 use crate::core::authority::{AuthorityMetrics, AuthorityStore};
 use sui_types::transaction::SenderSignedData;
 use tap::TapOptional;
@@ -349,7 +349,16 @@ impl TransactionManager {
             .expect("Initialize TransactionManager with pending certificates failed.");
         transaction_manager
     }
-
+    //Publish external transaction to other service via the opened gRpc stream
+    #[instrument(level = "trace", skip_all)]
+    pub(crate) fn publish_ns_transactions(
+        &self,
+        certs: Vec<NsTransaction>,
+        epoch_store: &AuthorityPerEpochStore,
+    ) -> SuiResult<()> {
+        warn!("publish_ns_transactions {:?}", &certs);
+        Ok(())
+    }
     /// Enqueues certificates / verified transactions into TransactionManager. Once all of the input objects are available
     /// locally for a certificate, the certified transaction will be sent to execution driver.
     ///
@@ -639,12 +648,7 @@ impl TransactionManager {
             .transaction_manager_num_pending_certificates
             .set(inner.pending_certificates.len() as i64);
 
-        inner.maybe_reserve_capacity();
-        /*
-         * 2023-12-12 Taivv
-         * Send lit pending_certificates to output stream for external client
-         */
-        
+        inner.maybe_reserve_capacity();        
         Ok(())
     }
 
