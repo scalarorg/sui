@@ -24,8 +24,8 @@ services:
     working_dir: /scalar
     # populate your local ./fullnode/config/ directory with fullnode.yaml and genesis.blob for the network you want to use.
     volumes:
-      - /home/viettai/scalar.org/reth:/reth
-      - /home/viettai/scalar.org/sui:/scalar
+      - ../../../reth:/reth
+      - ../..:/scalar
 
   runner:
     build:
