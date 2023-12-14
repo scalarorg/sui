@@ -656,9 +656,9 @@ mod tests {
     use std::{collections::HashSet, sync::Arc};
     use tracing::log::info;
 
-    use crate::authority::authority_store_pruner::AuthorityStorePruningMetrics;
-    use crate::authority::authority_store_tables::AuthorityPerpetualTables;
-    use crate::authority::authority_store_types::{
+    use crate::core::authority::authority_store_pruner::AuthorityStorePruningMetrics;
+    use crate::core::authority::authority_store_tables::AuthorityPerpetualTables;
+    use crate::core::authority::authority_store_types::{
         get_store_object_pair, ObjectContentDigest, StoreData, StoreObject, StoreObjectPair,
         StoreObjectWrapper,
     };
@@ -973,15 +973,17 @@ mod tests {
 #[cfg(not(target_os = "macos"))]
 #[cfg(not(target_env = "msvc"))]
 mod pprof_tests {
-    use crate::authority::authority_store_pruner::tests;
+    use crate::core::authority::authority_store_pruner::tests;
 
     use std::sync::Arc;
     use tracing::log::{error, info};
 
-    use crate::authority::authority_store_pruner::tests::lock_table;
-    use crate::authority::authority_store_pruner::AuthorityStorePruningMetrics;
-    use crate::authority::authority_store_tables::AuthorityPerpetualTables;
-    use crate::authority::authority_store_types::{get_store_object_pair, StoreObjectWrapper};
+    use crate::core::authority::authority_store_pruner::tests::lock_table;
+    use crate::core::authority::authority_store_pruner::AuthorityStorePruningMetrics;
+    use crate::core::authority::authority_store_tables::AuthorityPerpetualTables;
+    use crate::core::authority::authority_store_types::{
+        get_store_object_pair, StoreObjectWrapper,
+    };
     use pprof::Symbol;
     use prometheus::Registry;
     use sui_types::base_types::ObjectDigest;

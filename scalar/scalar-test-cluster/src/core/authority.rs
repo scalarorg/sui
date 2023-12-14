@@ -2,9 +2,9 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+use crate::consensus::consensus_listener::ConsensusListener;
 use crate::core::authority::authority_store_types::{StoreObject, StoreObjectWrapper};
 use crate::core::verify_indexes::verify_indexes;
-use crate::consensus::consensus_listener::ConsensusListener;
 use anyhow::anyhow;
 use arc_swap::{ArcSwap, Guard};
 use async_trait::async_trait;
@@ -124,6 +124,7 @@ use sui_types::{
 use sui_types::{is_system_package, TypeTag};
 use typed_store::Map;
 
+use crate::consensus::consensus_adapter::ConsensusAdapter;
 use crate::core::authority::authority_per_epoch_store::{AuthorityPerEpochStore, CertTxGuard};
 use crate::core::authority::authority_per_epoch_store_pruner::AuthorityPerEpochStorePruner;
 use crate::core::authority::authority_store::{ExecutionLockReadGuard, ObjectLockStatus};
@@ -132,7 +133,6 @@ use crate::core::authority::epoch_start_configuration::EpochStartConfigTrait;
 use crate::core::authority::epoch_start_configuration::EpochStartConfiguration;
 use crate::core::checkpoints::checkpoint_executor::CheckpointExecutor;
 use crate::core::checkpoints::CheckpointStore;
-use crate::consensus::consensus_adapter::ConsensusAdapter;
 use crate::core::epoch::committee_store::CommitteeStore;
 use crate::core::execution_driver::execution_process;
 use crate::core::module_cache_metrics::ResolverMetrics;
@@ -2162,10 +2162,12 @@ impl AuthorityState {
 
         let metrics = Arc::new(AuthorityMetrics::new(prometheus_registry));
         let (tx_ready_certificates, rx_ready_certificates) = unbounded_channel();
+        let (tx_commited_transactions, rx_commited_transactions) = unbounded_channel();
         let transaction_manager = Arc::new(TransactionManager::new(
             store.clone(),
             &epoch_store,
             tx_ready_certificates,
+            tx_commited_transactions,
             metrics.clone(),
         ));
         let (tx_execution_shutdown, rx_execution_shutdown) = oneshot::channel();
@@ -2213,12 +2215,12 @@ impl AuthorityState {
          */
         let consensus_listeners = state.get_consensus_listeners();
         consensus_listeners
-            .start_notifier(rx_ready_certificates)
+            .start_notifier(rx_commited_transactions)
             .await;
-        let (tx_ready_certificates, rx_ready_certificates) = unbounded_channel();
-        consensus_listeners
-            .add_listener(tx_ready_certificates)
-            .await;
+        // let (tx_ready_certificates, rx_ready_certificates) = unbounded_channel();
+        // consensus_listeners
+        //     .add_listener(tx_ready_certificates)
+        //     .await;
         // Start a task to execute ready certificates.
         let authority_state = Arc::downgrade(&state);
         spawn_monitored_task!(execution_process(

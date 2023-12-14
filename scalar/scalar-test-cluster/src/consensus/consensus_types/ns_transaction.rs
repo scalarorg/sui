@@ -4,13 +4,15 @@
  */
 
 use narwhal_types::Transaction;
-use serde::{Serialize, Deserialize};
-pub const NAMESPACE_RETH: &str = "reth";
+use serde::{Deserialize, Serialize};
+
+use crate::ExternalTransaction;
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NsTransaction {
     pub namespace: String,
     #[serde(with = "serde_bytes")]
-    pub transaction: Transaction
+    pub transaction: Transaction,
 }
 impl NsTransaction {
     pub fn new(namespace: String, transaction: Transaction) -> NsTransaction {
@@ -19,10 +21,31 @@ impl NsTransaction {
             transaction,
         }
     }
-    pub fn new_reth_transaction(transaction: Transaction) -> NsTransaction {
-        Self {
-            namespace: NAMESPACE_RETH.to_owned(),
+}
+
+impl Into<ExternalTransaction> for NsTransaction {
+    fn into(self) -> ExternalTransaction {
+        let NsTransaction {
+            namespace,
             transaction,
+        } = self;
+        ExternalTransaction {
+            namespace,
+            tx_bytes: transaction,
+        }
+    }
+}
+
+impl From<ExternalTransaction> for NsTransaction {
+    fn from(value: ExternalTransaction) -> Self {
+        let ExternalTransaction {
+            namespace,
+            tx_bytes,
+        } = value;
+
+        NsTransaction {
+            namespace,
+            transaction: tx_bytes,
         }
     }
 }

@@ -25,8 +25,11 @@ use sui_types::{
 use tokio::sync::mpsc::UnboundedSender;
 use tracing::{error, instrument, trace, warn};
 
-use crate::{core::authority::authority_per_epoch_store::AuthorityPerEpochStore, consensus::consensus_types::NsTransaction};
 use crate::core::authority::{AuthorityMetrics, AuthorityStore};
+use crate::{
+    consensus::consensus_types::NsTransaction,
+    core::authority::authority_per_epoch_store::AuthorityPerEpochStore,
+};
 use sui_types::transaction::SenderSignedData;
 use tap::TapOptional;
 
@@ -58,6 +61,7 @@ pub struct TransactionManager {
         VerifiedExecutableTransaction,
         Option<TransactionEffectsDigest>,
     )>,
+    tx_commited_transactions: UnboundedSender<Vec<NsTransaction>>,
     metrics: Arc<AuthorityMetrics>,
     inner: RwLock<Inner>,
 }
@@ -336,6 +340,7 @@ impl TransactionManager {
             VerifiedExecutableTransaction,
             Option<TransactionEffectsDigest>,
         )>,
+        tx_commited_transactions: UnboundedSender<Vec<NsTransaction>>,
         metrics: Arc<AuthorityMetrics>,
     ) -> TransactionManager {
         let transaction_manager = TransactionManager {
@@ -343,6 +348,7 @@ impl TransactionManager {
             metrics: metrics.clone(),
             inner: RwLock::new(Inner::new(epoch_store.epoch(), metrics)),
             tx_ready_certificates,
+            tx_commited_transactions,
         };
         transaction_manager
             .enqueue(epoch_store.all_pending_execution().unwrap(), epoch_store)
@@ -353,10 +359,11 @@ impl TransactionManager {
     #[instrument(level = "trace", skip_all)]
     pub(crate) fn publish_ns_transactions(
         &self,
-        certs: Vec<NsTransaction>,
+        transactions: Vec<NsTransaction>,
         epoch_store: &AuthorityPerEpochStore,
     ) -> SuiResult<()> {
-        warn!("publish_ns_transactions {:?}", &certs);
+        warn!("publish_ns_transactions {:?}", &transactions);
+        self.tx_commited_transactions.send(transactions);
         Ok(())
     }
     /// Enqueues certificates / verified transactions into TransactionManager. Once all of the input objects are available
@@ -648,7 +655,7 @@ impl TransactionManager {
             .transaction_manager_num_pending_certificates
             .set(inner.pending_certificates.len() as i64);
 
-        inner.maybe_reserve_capacity();        
+        inner.maybe_reserve_capacity();
         Ok(())
     }
 

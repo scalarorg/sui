@@ -486,7 +486,7 @@ async fn setup_zklogin_network(
     Arc<AuthorityState>,
     Guard<Arc<AuthorityPerEpochStore>>,
     sui_types::message_envelope::Envelope<SenderSignedData, sui_types::crypto::EmptySignInfo>,
-    Arc<crate::authority_server::ValidatorServiceMetrics>,
+    Arc<crate::core::authority_server::ValidatorServiceMetrics>,
     AuthorityServerHandle,
     NetworkAuthorityClient,
 ) {

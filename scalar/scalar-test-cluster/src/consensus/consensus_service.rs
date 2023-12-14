@@ -3,18 +3,21 @@ use fastcrypto::encoding::Base64;
 use fastcrypto::traits::ToFromBytes;
 use mysten_metrics::spawn_monitored_task;
 use prometheus::Registry;
-use shared_crypto::intent::{Intent, IntentScope, AppId};
+use shared_crypto::intent::{AppId, Intent, IntentScope};
+use std::pin::Pin;
+use std::sync::Arc;
 use sui_types::base_types::SuiAddress;
-use sui_types::crypto::{AuthorityStrongQuorumSignInfo, AuthoritySignInfo, Signature};
-use sui_types::error::{SuiResult, SuiError};
+use sui_types::crypto::{AuthoritySignInfo, AuthorityStrongQuorumSignInfo, Signature};
+use sui_types::error::{SuiError, SuiResult};
+use sui_types::executable_transaction::{CertificateProof, VerifiedExecutableTransaction};
 use sui_types::gas::SuiGasStatusAPI;
 use sui_types::message_envelope::Envelope;
 use sui_types::messages_consensus::ConsensusTransaction;
 use sui_types::signature::GenericSignature;
-use sui_types::transaction::{Transaction, CertifiedTransaction, SenderSignedData, TransactionData, TransactionKind, TransactionDataAPI};
-use sui_types::executable_transaction::{VerifiedExecutableTransaction, CertificateProof};
-use std::pin::Pin;
-use std::sync::Arc;
+use sui_types::transaction::{
+    CertifiedTransaction, SenderSignedData, Transaction, TransactionData, TransactionDataAPI,
+    TransactionKind,
+};
 use tokio::sync::mpsc::{self, UnboundedSender};
 use tokio::sync::RwLock;
 use tokio_stream::{wrappers::UnboundedReceiverStream, Stream, StreamExt};
@@ -22,20 +25,18 @@ use tonic::{Response, Status};
 use tracing::{error, info, instrument};
 
 use crate::consensus::consensus_adapter::SubmitToConsensus;
-use crate::consensus::consensus_types::{NsTransaction, ConsensusTransactionWrapper};
-use crate::core::authority::AuthorityState;
+use crate::consensus::consensus_types::{ConsensusTransactionWrapper, NsTransaction};
 use crate::core::authority::authority_per_epoch_store::AuthorityPerEpochStore;
+use crate::core::authority::AuthorityState;
 use crate::core::authority_server::ValidatorService;
-use crate::core::signature_verifier::SignatureVerifier;
-use crate::{ConsensusTransactionOut, ConsensusApi, ConsensusTransactionIn};
+use crate::{CommitedTransactions, ConsensusApi, ExternalTransaction};
 
 use super::consensus_adapter::ConsensusAdapter;
 pub type ConsensusServiceResult<T> = Result<Response<T>, Status>;
-pub type ListenerCollection = Vec<UnboundedSender<Result<ConsensusTransactionOut, Status>>>;
-pub type ResponseStream =
-    Pin<Box<dyn Stream<Item = Result<ConsensusTransactionOut, Status>> + Send>>;
+pub type ListenerCollection = Vec<UnboundedSender<Result<CommitedTransactions, Status>>>;
+pub type ResponseStream = Pin<Box<dyn Stream<Item = Result<CommitedTransactions, Status>> + Send>>;
 
-    #[derive(Clone)]
+#[derive(Clone)]
 pub struct ConsensusServiceMetrics {
     // pub transaction_counter: Histogram,
     // pub wait_for_finality_timeout: GenericCounter<AtomicU64>,
@@ -68,15 +69,13 @@ impl ConsensusServiceMetrics {
 //     }
 // }
 
-fn from_verified_executable_transaction(verified_consensus_transaction: VerifiedExecutableTransaction) -> ConsensusTransactionOut {
-    let digest: &[u8] = verified_consensus_transaction.digest().as_ref();
-    let digest = digest.to_vec();
-    let inner_transactions = verified_consensus_transaction.into_inner();
-    let (data, signature) = inner_transactions.into_data_and_sig();
-    info!("Consensus data {:?}", data.inner());
-    ConsensusTransactionOut {
-        payload: digest.to_vec(),
-    }
+fn from_ns_transactions(ns_transactions: Vec<NsTransaction>) -> CommitedTransactions {
+    let transactions = ns_transactions
+        .into_iter()
+        .map(|ns_tran: NsTransaction| ns_tran.into())
+        .collect();
+    info!("Consensus data {:?}", &transactions);
+    CommitedTransactions { transactions }
 }
 
 #[derive(Clone)]
@@ -105,14 +104,13 @@ impl ConsensusService {
     }
     pub async fn handle_consensus_transaction(
         &self,
-        transaction_in: ConsensusTransactionIn,
+        transaction_in: ExternalTransaction,
     ) -> anyhow::Result<()> {
         info!(
             "gRpc service handle consensus_transaction {:?}",
             &transaction_in
         );
-        let ConsensusTransactionIn { tx_bytes, signatures } = transaction_in;
-        let ns_transaction = NsTransaction::new_reth_transaction(tx_bytes);
+        let ns_transaction = NsTransaction::from(transaction_in);
         let transaction_wrapper = ConsensusTransactionWrapper::Namespace(ns_transaction);
         //self.validator_service.handle_transaction_for_testing(transaction.into()).await;
         // if let Ok(cetificate_tran) = self.create_certificate_transaction(transaction) {
@@ -120,17 +118,22 @@ impl ConsensusService {
         //     let authority = &self.state.name;
         //     let consensus_transaction = ConsensusTransaction::new_certificate_message(authority, cetificate_tran);
         //     self.consensus_adapter.submit_to_consensus(&consensus_transaction, &self.epoch_store).await;
-            
+
         // }
-        let tx_bytes = bcs::to_bytes(&transaction_wrapper).map_err(|err| anyhow!("{:?}", err)).expect("Serialization should not fail.");
-        self.consensus_adapter.submit_raw_transaction_to_consensus(tx_bytes, &self.epoch_store).await.map_err(|err| anyhow!(err.to_string()))
+        let tx_bytes = bcs::to_bytes(&transaction_wrapper)
+            .map_err(|err| anyhow!("{:?}", err))
+            .expect("Serialization should not fail.");
+        self.consensus_adapter
+            .submit_raw_transaction_to_consensus(tx_bytes, &self.epoch_store)
+            .await
+            .map_err(|err| anyhow!(err.to_string()))
     }
 
     // fn create_certificate_transaction(&self, transaction_in: ConsensusTransactionIn) -> SuiResult<CertifiedTransaction> {
     //     let ConsensusTransactionIn { tx_bytes, signatures } = transaction_in;
     //     let authority_name = &self.state.name;
     //     let generic_signatures = signatures.iter().map(|sig| {
-    //         Signature::from_bytes(sig.as_bytes()).map_err(|err| 
+    //         Signature::from_bytes(sig.as_bytes()).map_err(|err|
     //             SuiError::InvalidSignature{ error: sig.to_owned()}
     //         ).map(|sig| GenericSignature::Signature(sig)).unwrap()
     //     }).collect::<Vec<GenericSignature>>();
@@ -162,7 +165,7 @@ impl ConsensusApi for ConsensusService {
 
     async fn init_transaction(
         &self,
-        request: tonic::Request<tonic::Streaming<ConsensusTransactionIn>>,
+        request: tonic::Request<tonic::Streaming<ExternalTransaction>>,
     ) -> ConsensusServiceResult<Self::InitTransactionStream> {
         info!("ConsensusServiceServer::init_transaction");
         let mut in_stream = request.into_inner();
@@ -174,27 +177,28 @@ impl ConsensusApi for ConsensusService {
             let (tx_consensus_res, mut rx_consensus_res) = mpsc::unbounded_channel();
             let consensus_listeners = state.get_consensus_listeners();
             consensus_listeners.add_listener(tx_consensus_res).await;
-            while let Some((verified_consensus_transaction, effects_digest)) = rx_consensus_res.recv().await {
-                // Scalar Todo: Convert consensus result (VerifiedExecutableTransaction, Option<TransactionEffectsDigest>) to ConsensusTransactionOut
-                info!("Consensus output {:?}", &verified_consensus_transaction);
+            while let Some(ns_transactions) = rx_consensus_res.recv().await {
+                // Scalar Todo: Convert consensus result (VerifiedExecutableTransaction, Option<TransactionEffectsDigest>) to CommitTransactions
+                info!("Consensus output {:?}", &ns_transactions);
                 //let inner_transactions = verified_consensus_transaction.into_inner();
-                let transaction_out = from_verified_executable_transaction(verified_consensus_transaction);
+                let transaction_out = from_ns_transactions(ns_transactions);
                 tx_consensus_out.send(Ok(transaction_out));
             }
         });
-       
+
         let consensus_service = self.clone();
         let _handle = tokio::spawn(async move {
             let service = consensus_service;
             while let Some(client_message) = in_stream.next().await {
                 match client_message {
                     Ok(transaction_in) => {
-                        let _handle_res = service.handle_consensus_transaction(transaction_in).await;
-                    },
+                        let _handle_res =
+                            service.handle_consensus_transaction(transaction_in).await;
+                    }
                     Err(err) => {
                         error!("{:?}", err);
                     }
-                }    
+                }
             }
         });
         let out_stream = UnboundedReceiverStream::new(rx_consensus_out);
@@ -203,7 +207,6 @@ impl ConsensusApi for ConsensusService {
         ))
     }
 }
-
 
 // #[derive(Clone)]
 // pub struct EthTransactionHandler {

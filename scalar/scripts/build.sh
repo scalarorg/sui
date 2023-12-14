@@ -22,7 +22,7 @@ scalar_cluster() {
 scalar_reth() {
     BIN_NAME=scalar-reth
     WORKING_DIR=/reth
-    docker exec -it ${BUILDER} cargo build --manifest-path ${WORKING_DIR}/scalar/Cargo.toml --profile dev --bin ${BIN_NAME}
+    docker exec -it ${BUILDER} cargo build --manifest-path ${WORKING_DIR}/scalar/reth-node/Cargo.toml --profile dev --bin ${BIN_NAME}
     docker cp ${BUILDER}:${WORKING_DIR}/target/${PROFILE}/${BIN_NAME} ${SCRIPT_DIR}/${BIN_NAME}
     docker cp ${SCRIPT_DIR}/${BIN_NAME} ${RUNNER}:/usr/local/bin
     rm ${SCRIPT_DIR}/${BIN_NAME}

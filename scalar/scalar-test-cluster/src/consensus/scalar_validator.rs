@@ -188,7 +188,7 @@ impl ScalarTxValidatorMetrics {
 mod tests {
     use crate::{
         consensus::consensus_adapter::consensus_tests::{test_certificates, test_gas_objects},
-        consensus::consensus_validator::{ScalarTxValidator, ScalarTxValidatorMetrics},
+        consensus::scalar_validator::{ScalarTxValidator, ScalarTxValidatorMetrics},
     };
 
     use crate::core::{
