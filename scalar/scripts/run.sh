@@ -5,6 +5,12 @@ RUNNER=scalar-runner
 scalar_cluster() {
   docker exec -it ${RUNNER} /entry.sh scalar_cluster
 }
+
+# HuongND 2023-12-14
+reth_test_cluster() {
+  docker exec -it ${RUNNER} /entry.sh reth_test_cluster
+}
+
 scalar_reth() {
   docker exec -it ${RUNNER} /entry.sh scalar_reth
 }
