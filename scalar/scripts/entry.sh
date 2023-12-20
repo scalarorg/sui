@@ -30,6 +30,19 @@ scalar() {
         --indexer-rpc-port 9124
 }
 
+reth() {
+    RUST_LOG=trace /usr/local/bin/reth node \
+        --chain dev \
+        --http \
+        --http.addr 0.0.0.0 \
+        --http.corsdomain "*" \
+        --http.api admin,debug,eth,net,trace,txpool,web3,rpc \
+        --ws \
+        --ws.addr 0.0.0.0 \
+        --metrics 127.0.0.1:9001 \
+        --auto-mine 
+}
+
 consensus() {
     RUST_LOG=debug /usr/local/bin/consensus-node \
         --config-path /scalar/validator.yaml

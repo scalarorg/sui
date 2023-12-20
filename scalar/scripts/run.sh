@@ -6,6 +6,7 @@ scalar_cluster() {
   docker exec -it ${RUNNER} /entry.sh scalar_cluster
 }
 scalar_reth() {
+  docker exec -it ${RUNNER} rm -rf /root/.local/share/reth/dev
   docker exec -it ${RUNNER} /entry.sh scalar_reth
 }
 
