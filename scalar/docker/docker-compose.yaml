@@ -44,6 +44,8 @@ services:
     volumes:
       - ../configs/scalar:/scalar
       - ../scripts/entry.sh:/entry.sh
+    env_file:
+      - ../../../reth/.env
     ports:
       - "30303:30303"         # Peering ports
       - "30303:30303/udp"     # Peering ports
