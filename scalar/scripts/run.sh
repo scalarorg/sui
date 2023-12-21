@@ -13,7 +13,8 @@ reth_test_cluster() {
 }
 
 reth_test_client() {
-  docker exec -it ${RUNNER} /entry.sh reth_test_client
+  TX_COUNT=${1:-20}
+  docker exec -it ${RUNNER} /entry.sh reth_test_client ${TX_COUNT}
 }
 
 scalar_reth() {

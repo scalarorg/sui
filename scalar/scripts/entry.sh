@@ -12,7 +12,8 @@ reth_test_cluster() {
 }  
 
 reth_test_client() {
-    RUST_LOG=info /usr/local/bin/reth-test-client send_raw_tx 20
+    TX_COUNT=${1:-20}
+    RUST_LOG=info /usr/local/bin/reth-test-client send_raw_tx ${TX_COUNT}
 }  
 
 scalar_reth() {
