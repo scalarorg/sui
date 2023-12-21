@@ -11,6 +11,10 @@ reth_test_cluster() {
     RUST_LOG=info /usr/local/bin/reth-test-cluster
 }  
 
+reth_test_client() {
+    RUST_LOG=info /usr/local/bin/reth-test-client send_raw_tx 20
+}  
+
 scalar_reth() {
     RUST_LOG=info /usr/local/bin/scalar-reth node \
         --chain dev \
