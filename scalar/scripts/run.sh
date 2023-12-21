@@ -8,7 +8,12 @@ scalar_cluster() {
 
 # HuongND 2023-12-14
 reth_test_cluster() {
+  docker exec -it scalar-runner rm -rf /root/.local/share/reth
   docker exec -it ${RUNNER} /entry.sh reth_test_cluster
+}
+
+reth_test_client() {
+  docker exec -it ${RUNNER} /entry.sh reth_test_client
 }
 
 scalar_reth() {
