@@ -16,6 +16,19 @@ reth_test_client() {
     RUST_LOG=info /usr/local/bin/reth-test-client send_raw_tx ${TX_COUNT}
 }  
 
+sui_cluster_test() {
+    RUST_LOG=info /usr/local/bin/sui-cluster-test \
+        custom-remote \
+        --fullnode-address http://127.0.0.1:9000 \
+        --faucet-address http://127.0.0.1:9123
+}
+
+sui_test_validator() {
+    RUST_LOG=info /usr/local/bin/sui-test-validator \
+        --fullnode-rpc-port 9000 \
+        --faucet-port 9123
+}
+
 scalar_reth() {
     RUST_LOG=info /usr/local/bin/scalar-reth node \
         --chain dev \
