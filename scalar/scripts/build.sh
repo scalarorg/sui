@@ -71,6 +71,55 @@ scalar() {
     rm ${SCRIPT_DIR}/${BIN_NAME}
 }
 
+sui_test_validator() {
+    BIN_NAME=sui-test-validator
+    WORKING_DIR=/scalar
+    docker exec -it ${BUILDER} cargo build --manifest-path ${WORKING_DIR}/crates/${BIN_NAME}/Cargo.toml --profile dev --bin ${BIN_NAME}
+    docker cp ${BUILDER}:${WORKING_DIR}/target/${PROFILE}/${BIN_NAME} ${SCRIPT_DIR}/${BIN_NAME}
+    docker cp ${SCRIPT_DIR}/${BIN_NAME} ${RUNNER}:/usr/local/bin
+    rm ${SCRIPT_DIR}/${BIN_NAME}
+}
+
+sui_cluster_test() {
+    BIN_NAME=sui-cluster-test
+    WORKING_DIR=/scalar
+    BASIC_DIR_NAME=basics
+    BASIC_OUTER_DIR=/sui_programmability/examples
+    BASIC_PACKAGES_DIR=${BASIC_OUTER_DIR}/${BASIC_DIR_NAME}
+    MANAGED_COIN_DIR_NAME=managed_coin
+    MANAGED_OUTER_DIR=/crates/sui-core/src/unit_tests/data
+    MANAGED_COIN_PACKAGES_DIR=${MANAGED_OUTER_DIR}/${MANAGED_COIN_DIR_NAME}
+    PACKAGES_DIR_NAME=packages
+    PACKAGES_OUTER_DIR=/crates/sui-framework
+    PACKAGES_DIR=${PACKAGES_OUTER_DIR}/${PACKAGES_DIR_NAME}
+
+    docker exec -it ${BUILDER} cargo build --manifest-path ${WORKING_DIR}/crates/${BIN_NAME}/Cargo.toml --profile dev --bin ${BIN_NAME}
+    docker cp ${BUILDER}:${WORKING_DIR}/target/${PROFILE}/${BIN_NAME} ${SCRIPT_DIR}/${BIN_NAME}
+    docker cp ${SCRIPT_DIR}/${BIN_NAME} ${RUNNER}:/usr/local/bin
+
+    docker exec -it ${RUNNER} mkdir -p ${WORKING_DIR}/crates/sui-test-transaction-builder
+
+    mkdir -p ${SCRIPT_DIR}/${BASIC_DIR_NAME}
+    docker cp ${BUILDER}:${WORKING_DIR}${BASIC_PACKAGES_DIR} ${SCRIPT_DIR}
+    docker exec -it ${RUNNER} mkdir -p ${WORKING_DIR}${BASIC_PACKAGES_DIR}
+    docker cp ${SCRIPT_DIR}/${BASIC_DIR_NAME}/ ${RUNNER}:${WORKING_DIR}${BASIC_OUTER_DIR}
+
+    mkdir -p ${SCRIPT_DIR}/${MANAGED_COIN_DIR_NAME}
+    docker cp ${BUILDER}:${WORKING_DIR}${MANAGED_COIN_PACKAGES_DIR} ${SCRIPT_DIR}
+    docker exec -it ${RUNNER} mkdir -p ${WORKING_DIR}${MANAGED_COIN_PACKAGES_DIR}
+    docker cp ${SCRIPT_DIR}/${MANAGED_COIN_DIR_NAME}/ ${RUNNER}:${WORKING_DIR}${MANAGED_OUTER_DIR}
+
+    mkdir -p ${SCRIPT_DIR}/${PACKAGES_DIR_NAME}
+    docker cp ${BUILDER}:${WORKING_DIR}${PACKAGES_DIR} ${SCRIPT_DIR}
+    docker exec -it ${RUNNER} mkdir -p ${WORKING_DIR}${PACKAGES_DIR}
+    docker cp ${SCRIPT_DIR}/${PACKAGES_DIR_NAME}/ ${RUNNER}:${WORKING_DIR}${PACKAGES_OUTER_DIR}
+
+    rm ${SCRIPT_DIR}/${BIN_NAME}
+    rm -rf ${SCRIPT_DIR}/${BASIC_DIR_NAME}
+    rm -rf ${SCRIPT_DIR}/${MANAGED_COIN_DIR_NAME}
+    rm -rf ${SCRIPT_DIR}/${PACKAGES_DIR_NAME}
+}
+
 consensus() {
     BIN_NAME=consensus-node
     WORKING_DIR=/scalar

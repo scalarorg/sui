@@ -6,6 +6,14 @@ scalar_cluster() {
   docker exec -it ${RUNNER} /entry.sh scalar_cluster
 }
 
+sui_test_validator() {
+  docker exec -it ${RUNNER} /entry.sh sui_test_validator
+}
+
+sui_cluster_test() {
+  docker exec -it ${RUNNER} /entry.sh sui_cluster_test
+}
+
 # HuongND 2023-12-14
 reth_test_cluster() {
   docker exec -it scalar-runner rm -rf /root/.local/share/reth
