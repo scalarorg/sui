@@ -27,13 +27,13 @@ jobs:
         run: |
           cd docker/stress
           docker build -t stress-testing:${{ env.GIT_SHA }} --build-arg SUI_TOOLS_IMAGE_TAG=mainnet-v1.19.1 .
-          docker save stress-testing:${{ env.GIT_SHA }} -o stress_testing_${{ env.GIT_SHA }}.tar
+          docker save stress-testing:${{ env.GIT_SHA }} -o ../../stress_testing_${{ env.GIT_SHA }}.tar
 
       - name: Build sui-network image
         run: |
           cd docker/sui-network
           docker build -t sui-network-latest:${{ env.GIT_SHA }} .
-          docker save sui-network-latest:${{ env.GIT_SHA }} -o sui_network_latest_${{ env.GIT_SHA }}.tar
+          docker save sui-network-latest:${{ env.GIT_SHA }} -o ../../sui_network_latest_${{ env.GIT_SHA }}.tar
 
       - name: Install sshpass
         run: sudo apt-get install -y sshpass
