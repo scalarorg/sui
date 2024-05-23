@@ -5,7 +5,7 @@ services:
     networks:
       sui-network:
         ipv4_address: 10.0.0.11
-    image: scalaris/consensus-node
+    image: scalaris/consensus-node:${GIT_SHA}
     container_name: validator1
     hostname: validator1
     environment:
@@ -34,7 +34,7 @@ services:
     networks:
       sui-network:
         ipv4_address: 10.0.0.12
-    image: scalaris/consensus-node
+    image: scalaris/consensus-node:${GIT_SHA}
     container_name: validator2
     hostname: validator2
     environment:
@@ -63,7 +63,7 @@ services:
     networks:
       sui-network:
         ipv4_address: 10.0.0.13
-    image: scalaris/consensus-node
+    image: scalaris/consensus-node:${GIT_SHA}
     container_name: validator3
     hostname: validator3
     environment:
@@ -92,7 +92,7 @@ services:
     networks:
       sui-network:
         ipv4_address: 10.0.0.14
-    image: scalaris/consensus-node
+    image: scalaris/consensus-node:${GIT_SHA}
     container_name: validator4
     hostname: validator4
     environment:
@@ -121,7 +121,7 @@ services:
     networks:
       sui-network:
         ipv4_address: 10.0.0.15
-    image: scalaris/consensus-node
+    image: scalaris/consensus-node:${GIT_SHA}
     hostname: fullnode1
     container_name: fullnode1
     environment:
@@ -149,7 +149,7 @@ services:
     networks:
       sui-network:
         ipv4_address: 10.0.0.16
-    image: stress:testing
+    image: stress:testing:${GIT_SHA}
     container_name: stress
     environment:
       - RUST_LOG=info
