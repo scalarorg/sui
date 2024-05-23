@@ -54,20 +54,19 @@ jobs:
       - name: Transfer sui-network files to remote host
         run: sshpass -p ${{ secrets.REMOTE_PASSWORD }} scp -o StrictHostKeyChecking=no -P ${{ secrets.REMOTE_PORT }} -r docker/sui-network ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/
 
-      # - name: Load docker images and update docker-compose on remote host
-      #   run: |
-      #     sshpass -p ${{ secrets.REMOTE_PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
-      #       cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}
-      #       docker load -i scalaris_consensus_node_${{ env.GIT_SHA }}.tar
-      #       docker load -i stress_testing_${{ env.GIT_SHA }}.tar
-      #       docker load -i sui_network_latest_${{ env.GIT_SHA }}.tar
-      #       cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/docker/sui-network
-      #       sed -i 's/scalaris\/consensus-node/scalaris\/consensus-node:${{ env.GIT_SHA }}/g' docker-compose-scalaris.yaml
-      #       sed -i 's/stress-testing/stress-testing:${{ env.GIT_SHA }}/g' docker-compose-scalaris.yaml
-      #       sed -i 's/sui-network-latest/sui-network-latest:${{ env.GIT_SHA }}/g' docker-compose-scalaris.yaml
-      #       sed -i 's/container_name:.*/container_name: scalaris_consensus_node_${{ env.GIT_SHA }}/' docker-compose-scalaris.yaml
-      #       sed -i 's/container_name:.*/container_name: stress_testing_${{ env.GIT_SHA }}/' docker-compose-scalaris.yaml
-      #       sed -i 's/container_name:.*/container_name: sui_network_latest_${{ env.GIT_SHA }}/' docker-compose-scalaris.yaml
-      #       docker-compose -f docker-compose-scalaris.yaml down
-      #       docker-compose -f docker-compose-scalaris.yaml up -d
-      #     EOF
+      - name: Load docker images and update docker-compose on remote host
+        run: |
+          sshpass -p ${{ secrets.REMOTE_PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+            cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}
+            docker load -i scalaris_consensus_node_${{ env.GIT_SHA }}.tar
+            docker load -i stress_testing_${{ env.GIT_SHA }}.tar
+            docker load -i sui_network_latest_${{ env.GIT_SHA }}.tar
+            cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/docker/sui-network
+            sed -i 's/scalaris\/consensus-node/scalaris\/consensus-node:${{ env.GIT_SHA }}/g' docker-compose-scalaris.yaml
+            sed -i 's/stress-testing/stress-testing:${{ env.GIT_SHA }}/g' docker-compose-scalaris.yaml
+            sed -i 's/sui-network-latest/sui-network-latest:${{ env.GIT_SHA }}/g' docker-compose-scalaris.yaml
+            sed -i 's/container_name:.*/container_name: scalaris_consensus_node_${{ env.GIT_SHA }}/' docker-compose-scalaris.yaml
+            sed -i 's/container_name:.*/container_name: stress_testing_${{ env.GIT_SHA }}/' docker-compose-scalaris.yaml
+            sed -i 's/container_name:.*/container_name: sui_network_latest_${{ env.GIT_SHA }}/' docker-compose-scalaris.yaml
+            docker-compose -f docker-compose-scalaris.yaml up -d
+          EOF
