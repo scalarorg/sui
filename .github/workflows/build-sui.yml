@@ -17,11 +17,11 @@ jobs:
         id: vars
         run: echo "GIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      # - name: Build sui-node
-      #   run: |
-      #     chmod +x docker/sui-node/build.sh
-      #     docker/sui-node/build.sh -t scalaris/consensus-node:${{ env.GIT_SHA }}
-      #     docker save scalaris/consensus-node:${{ env.GIT_SHA }} -o scalaris_consensus_node_${{ env.GIT_SHA }}.tar
+      - name: Build sui-node
+        run: |
+          chmod +x docker/sui-node/build.sh
+          docker/sui-node/build.sh -t scalaris/consensus-node:${{ env.GIT_SHA }}
+          docker save scalaris/consensus-node:${{ env.GIT_SHA }} -o scalaris_consensus_node_${{ env.GIT_SHA }}.tar
 
       - name: Build stress image
         run: |
@@ -42,8 +42,8 @@ jobs:
         run: |
           sshpass -p ${{ secrets.REMOTE_PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "mkdir -p /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}"
 
-      # - name: Transfer sui-node image to remote host
-      #   run: sshpass -p ${{ secrets.REMOTE_PASSWORD }} scp -o StrictHostKeyChecking=no -P ${{ secrets.REMOTE_PORT }} scalaris_consensus_node_${{ env.GIT_SHA }}.tar ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/
+      - name: Transfer sui-node image to remote host
+        run: sshpass -p ${{ secrets.REMOTE_PASSWORD }} scp -o StrictHostKeyChecking=no -P ${{ secrets.REMOTE_PORT }} scalaris_consensus_node_${{ env.GIT_SHA }}.tar ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/
 
       - name: Transfer stress image to remote host
         run: sshpass -p ${{ secrets.REMOTE_PASSWORD }} scp -o StrictHostKeyChecking=no -P ${{ secrets.REMOTE_PORT }} stress_testing_${{ env.GIT_SHA }}.tar ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/
