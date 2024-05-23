@@ -3,7 +3,7 @@ name: Build and Run Docker Containers
 on:
   push:
     branches:
-      - scalaris_grpc_server
+      - action/ci-cd
 
 jobs:
   build-and-run:
@@ -13,10 +13,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Build sui-node
-        run: |
-          chmod +x docker/sui-node/build.sh
-          docker/sui-node/build.sh -t scalaris/consensus-node
+      # - name: Build sui-node
+      #   run: |
+      #     chmod +x docker/sui-node/build.sh
+      #     docker/sui-node/build.sh -t scalaris/consensus-node
 
       - name: Build stress image
         run: |
