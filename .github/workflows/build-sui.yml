@@ -38,8 +38,8 @@ jobs:
       - name: Install sshpass
         run: sudo apt-get install -y sshpass
 
-      - name: Transfer sui-node image to remote host
-        run: sshpass -p ${{ secrets.REMOTE_PASSWORD }} scp -o StrictHostKeyChecking=no -P ${{ secrets.REMOTE_PORT }} scalaris_consensus_node_${{ env.GIT_SHA }}.tar ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/
+      # - name: Transfer sui-node image to remote host
+      #   run: sshpass -p ${{ secrets.REMOTE_PASSWORD }} scp -o StrictHostKeyChecking=no -P ${{ secrets.REMOTE_PORT }} scalaris_consensus_node_${{ env.GIT_SHA }}.tar ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/
 
       - name: Transfer stress image to remote host
         run: sshpass -p ${{ secrets.REMOTE_PASSWORD }} scp -o StrictHostKeyChecking=no -P ${{ secrets.REMOTE_PORT }} stress_testing_${{ env.GIT_SHA }}.tar ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/
