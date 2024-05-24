@@ -15,48 +15,48 @@ jobs:
 
       - name: Get commit SHA
         id: vars
-        run: echo "GIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        run: echo "GIT_SHA=f175cb3" >> $GITHUB_ENV
 
-      - name: Build sui-node
-        run: |
-          chmod +x docker/sui-node/build.sh
-          docker/sui-node/build.sh -t scalaris/consensus-node:${{ env.GIT_SHA }}
-          docker save scalaris/consensus-node:${{ env.GIT_SHA }} -o scalaris_consensus_node.tar
+      # - name: Build sui-node
+      #   run: |
+      #     chmod +x docker/sui-node/build.sh
+      #     docker/sui-node/build.sh -t scalaris/consensus-node:${{ env.GIT_SHA }}
+      #     docker save scalaris/consensus-node:${{ env.GIT_SHA }} -o scalaris_consensus_node.tar
 
-      - name: Build stress image
-        run: |
-          cd docker/stress
-          docker build -t stress:${{ env.GIT_SHA }} --build-arg SUI_TOOLS_IMAGE_TAG=mainnet-v1.19.1 .
-          docker save stress:${{ env.GIT_SHA }} -o ../../stress.tar
+      # - name: Build stress image
+      #   run: |
+      #     cd docker/stress
+      #     docker build -t stress:${{ env.GIT_SHA }} --build-arg SUI_TOOLS_IMAGE_TAG=mainnet-v1.19.1 .
+      #     docker save stress:${{ env.GIT_SHA }} -o ../../stress.tar
 
-      - name: Build genesic image
-        run: |
-          cd docker/sui-network
-          docker build --file Dockerfile --output "type=local,dest=./" .
+      # - name: Build genesic image
+      #   run: |
+      #     cd docker/sui-network
+      #     docker build --file Dockerfile --output "type=local,dest=./" .
 
       - name: Install sshpass
         run: sudo apt-get install -y sshpass
 
-      - name: Create remote directory
-        run: |
-          sshpass -p ${{ secrets.REMOTE_PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "mkdir -p /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}"
+      # - name: Create remote directory
+      #   run: |
+      #     sshpass -p ${{ secrets.REMOTE_PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "mkdir -p /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}"
 
-      - name: Transfer sui-node image to remote host
-        run: sshpass -p ${{ secrets.REMOTE_PASSWORD }} scp -o StrictHostKeyChecking=no -P ${{ secrets.REMOTE_PORT }} scalaris_consensus_node.tar ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/
+      # - name: Transfer sui-node image to remote host
+      #   run: sshpass -p ${{ secrets.REMOTE_PASSWORD }} scp -o StrictHostKeyChecking=no -P ${{ secrets.REMOTE_PORT }} scalaris_consensus_node.tar ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/
 
-      - name: Transfer stress image to remote host
-        run: sshpass -p ${{ secrets.REMOTE_PASSWORD }} scp -o StrictHostKeyChecking=no -P ${{ secrets.REMOTE_PORT }} stress.tar ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/
+      # - name: Transfer stress image to remote host
+      #   run: sshpass -p ${{ secrets.REMOTE_PASSWORD }} scp -o StrictHostKeyChecking=no -P ${{ secrets.REMOTE_PORT }} stress.tar ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/
 
 
-      - name: Transfer sui-network files to remote host
-        run: sshpass -p ${{ secrets.REMOTE_PASSWORD }} scp -o StrictHostKeyChecking=no -P ${{ secrets.REMOTE_PORT }} -r docker/sui-network ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/
+      # - name: Transfer sui-network files to remote host
+      #   run: sshpass -p ${{ secrets.REMOTE_PASSWORD }} scp -o StrictHostKeyChecking=no -P ${{ secrets.REMOTE_PORT }} -r docker/sui-network ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/
 
       - name: Load docker images and update docker-compose on remote host
         run: |
           sshpass -p ${{ secrets.REMOTE_PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
             cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}
-            # docker load -i scalaris_consensus_node.tar
-            # docker load -i stress.tar
+            docker load -i scalaris_consensus_node.tar
+            docker load -i stress.tar
             cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/docker/sui-network
             sed -i 's/${GIT_SHA}:${{env.GIT_SHA}}/g' docker-compose-env.yaml
             docker-compose -f docker-compose-env.yaml up -d
