@@ -52,27 +52,9 @@ jobs:
       # - name: Transfer sui-network files to remote host
       #   run: sshpass -p ${{ secrets.REMOTE_PASSWORD }} scp -o StrictHostKeyChecking=no -P ${{ secrets.REMOTE_PORT }} -r docker/sui-network ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/
 
-      # - name: Load docker images and update docker-compose on remote host
-      #   run: |
-      #     sshpass -p ${{ secrets.REMOTE_PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}  /bin/bash << 'EOF'
-      #       cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}
-      #       # gzip -d scalaris_consensus_node.tar.gz
-      #       # gzip -d stress.tar.gz
-      #       docker load -i scalaris_consensus_node.tar
-      #       docker load -i stress.tar
-      #       cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/sui-network
-      #       sed -i "s/\${GIT_SHA}/${{env.GIT_SHA}}/g" docker-compose-env.yaml
-      #       docker-compose -f docker-compose-env.yaml up -d
-      #     EOF
-      
-      - name: executing remote ssh commands using password
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          password: ${{ secrets.REMOTE_PASSWORD }}
-          port: ${{ secrets.REMOTE_PORT }}
-          script: |
+      - name: Load docker images and update docker-compose on remote host
+        run: |
+          sshpass -p ${{ secrets.REMOTE_PASSWORD }} ssh -tt -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}  /bin/bash << 'EOF'
             cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}
             # gzip -d scalaris_consensus_node.tar.gz
             # gzip -d stress.tar.gz
@@ -81,3 +63,21 @@ jobs:
             cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/sui-network
             sed -i "s/\${GIT_SHA}/${{env.GIT_SHA}}/g" docker-compose-env.yaml
             docker-compose -f docker-compose-env.yaml up -d
+          EOF
+      
+      # - name: executing remote ssh commands using password
+      #   uses: appleboy/ssh-action@v1.0.3
+      #   with:
+      #     host: ${{ secrets.REMOTE_HOST }}
+      #     username: ${{ secrets.REMOTE_USER }}
+      #     password: ${{ secrets.REMOTE_PASSWORD }}
+      #     port: ${{ secrets.REMOTE_PORT }}
+      #     script: |
+      #       cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}
+      #       # gzip -d scalaris_consensus_node.tar.gz
+      #       # gzip -d stress.tar.gz
+      #       # docker load -i scalaris_consensus_node.tar
+      #       # docker load -i stress.tar
+      #       cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/sui-network
+      #       sed -i "s/\${GIT_SHA}/${{env.GIT_SHA}}/g" docker-compose-env.yaml
+      #       docker-compose -f docker-compose-env.yaml up -d
