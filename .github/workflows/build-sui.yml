@@ -15,7 +15,7 @@ jobs:
 
       - name: Get commit SHA
         id: vars
-        run: echo "5104021476efefe97351a48a5ed09f298236e379" >> $GITHUB_ENV
+        run: echo "GIT_SHA=5104021476efefe97351a48a5ed09f298236e379" >> $GITHUB_ENV
 
       # - name: Build sui-node
       #   run: |
