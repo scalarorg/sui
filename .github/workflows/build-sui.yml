@@ -32,7 +32,7 @@ jobs:
       - name: Build genesic image
         run: |
           cd docker/sui-network
-          docker build --file Dockerfile --output "type=local,dest=./"
+          docker build --file Dockerfile --output "type=local,dest=./" .
       - name: Install sshpass
         run: sudo apt-get install -y sshpass
 
