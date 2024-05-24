@@ -57,7 +57,7 @@ jobs:
             cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}
             docker load -i scalaris_consensus_node.tar
             docker load -i stress.tar
-            cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/docker/sui-network
+            cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/sui-network
             sed -i 's/${GIT_SHA}:${{env.GIT_SHA}}/g' docker-compose-env.yaml
             docker-compose -f docker-compose-env.yaml up -d
 
