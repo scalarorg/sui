@@ -63,6 +63,7 @@ jobs:
             cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}/sui-network
             sed -i "s/\${GIT_SHA}/${{env.GIT_SHA}}/g" docker-compose-env.yaml
             docker-compose -f docker-compose-env.yaml up -d
+            exit 0
           EOF
       
       # - name: executing remote ssh commands using password
