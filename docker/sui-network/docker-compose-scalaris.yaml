@@ -2,10 +2,7 @@ version: "3"
 
 services:
   validator1:
-    networks:
-      sui-network:
-        ipv4_address: 10.0.0.11
-    image: scalaris/consensus-node:${GIT_SHA}
+    image: scalaris/consensus-node
     container_name: validator1
     hostname: validator1
     environment:
@@ -31,10 +28,7 @@ services:
         max-file: "10"
         max-size: "1g"
   validator2:
-    networks:
-      sui-network:
-        ipv4_address: 10.0.0.12
-    image: scalaris/consensus-node:${GIT_SHA}
+    image: scalaris/consensus-node
     container_name: validator2
     hostname: validator2
     environment:
@@ -60,10 +54,7 @@ services:
         max-file: "10"
         max-size: "1g"
   validator3:
-    networks:
-      sui-network:
-        ipv4_address: 10.0.0.13
-    image: scalaris/consensus-node:${GIT_SHA}
+    image: scalaris/consensus-node
     container_name: validator3
     hostname: validator3
     environment:
@@ -89,10 +80,7 @@ services:
         max-file: "10"
         max-size: "1g"
   validator4:
-    networks:
-      sui-network:
-        ipv4_address: 10.0.0.14
-    image: scalaris/consensus-node:${GIT_SHA}
+    image: scalaris/consensus-node
     container_name: validator4
     hostname: validator4
     environment:
@@ -118,10 +106,7 @@ services:
         max-file: "10"
         max-size: "1g"
   fullnode1:
-    networks:
-      sui-network:
-        ipv4_address: 10.0.0.15
-    image: scalaris/consensus-node:${GIT_SHA}
+    image: scalaris/consensus-node
     hostname: fullnode1
     container_name: fullnode1
     environment:
@@ -146,16 +131,13 @@ services:
         max-size: "1g"
 
   stress:
-    networks:
-      sui-network:
-        ipv4_address: 10.0.0.16
-    image: stress:testing:${GIT_SHA}
+    image: stress:testing
     container_name: stress
     environment:
       - RUST_LOG=info
       - STARTUP_DELAY_SECONDS=5
       - STRESS_STAGGERED_START_MAX_MULTIPLIER=0
-      - FULLNODE_RPC_ADDRESS=10.0.0.15:9000
+      - FULLNODE_RPC_ADDRESS=fullnode1:9000
       - USE_FULLNODE_FOR_RECONFIG=false
       - PRIMARY_GAS_OWNER=0xd59d79516a4ed5b6825e80826c075a12bdd2759aaeb901df2f427f5f880c8f60
       - GENESIS_BLOB_PATH=/opt/sui/config/genesis.blob
@@ -176,9 +158,3 @@ services:
       options:
         max-file: "10"
         max-size: "1g"
-networks:
-  sui-network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 10.0.0.0/24
