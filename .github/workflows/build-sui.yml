@@ -54,7 +54,7 @@ jobs:
 
       - name: Load docker images and update docker-compose on remote host
         run: |
-          sshpass -p ${{ secrets.REMOTE_PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+          sshpass -p ${{ secrets.REMOTE_PASSWORD }} ssh -o StrictHostKeyChecking=no -p ${{ secrets.REMOTE_PORT }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}  /bin/bash << 'EOF'
             cd /home/${{ secrets.REMOTE_USER }}/sui_${{ env.GIT_SHA }}
             gzip -d scalaris_consensus_node.tar.gz
             gzip -d stress.tar.gz
