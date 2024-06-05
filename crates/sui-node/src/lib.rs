@@ -77,7 +77,7 @@ use sui_core::consensus_manager::{ConsensusManager, ConsensusManagerTrait};
 use sui_core::consensus_throughput_calculator::{
     ConsensusThroughputCalculator, ConsensusThroughputProfiler, ThroughputProfileRanges,
 };
-use sui_core::consensus_validator::{SuiTxValidator, SuiTxValidatorMetrics};
+// use sui_core::consensus_validator::{SuiTxValidator, SuiTxValidatorMetrics};
 use sui_core::db_checkpoint_handler::DBCheckpointHandler;
 use sui_core::epoch::committee_store::CommitteeStore;
 use sui_core::epoch::data_removal::EpochDataRemover;
@@ -135,7 +135,8 @@ use crate::metrics::{GrpcMetrics, SuiNodeMetrics};
 pub mod admin;
 mod handle;
 pub mod metrics;
-
+type SuiTxValidatorMetrics = sui_core::scalaris::ScalarisTxValidatorMetrics;
+type SuiTxValidator = sui_core::scalaris::ScalarisTxValidator;
 pub struct ValidatorComponents {
     validator_server_handle: JoinHandle<Result<()>>,
     validator_overload_monitor_handle: Option<JoinHandle<()>>,
@@ -1364,6 +1365,24 @@ impl SuiNode {
             ServerBuilder::from_config(&server_conf, GrpcMetrics::new(prometheus_registry));
 
         server_builder = server_builder.add_service(ValidatorServer::new(validator_service));
+
+        /*
+         * 20240504 - Taivv
+         * Scalaris: Add consensus grpc service for external grpc client
+         */
+        match sui_core::scalaris::ConsensusService::new(config, prometheus_registry) {
+            Ok(consensus_service) => {
+                server_builder = server_builder
+                    .add_service(sui_core::ConsensusApiServer::new(consensus_service));
+            }
+            Err(err) => {
+                info!(
+                    "Error while create consensus service with config {:?}. {:?}",
+                    config, err
+                );
+            }
+        }
+        /************And adding consensus grpc server ****************/
 
         let server = server_builder
             .bind(config.network_address())

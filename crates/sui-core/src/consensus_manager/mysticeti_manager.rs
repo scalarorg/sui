@@ -23,7 +23,6 @@ use crate::{
     consensus_manager::{
         ConsensusManagerMetrics, ConsensusManagerTrait, Running, RunningLockGuard,
     },
-    consensus_validator::SuiTxValidator,
     mysticeti_adapter::LazyMysticetiClient,
 };
 
@@ -97,7 +96,8 @@ impl ConsensusManagerTrait for MysticetiManager {
         _config: &NodeConfig,
         epoch_store: Arc<AuthorityPerEpochStore>,
         consensus_handler_initializer: ConsensusHandlerInitializer,
-        tx_validator: SuiTxValidator,
+        tx_validator: impl Clone + consensus_core::TransactionVerifier,
+        // tx_validator: SuiTxValidator,
     ) {
         let system_state = epoch_store.epoch_start_state();
         let committee: Committee = system_state.get_mysticeti_committee();

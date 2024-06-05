@@ -5,7 +5,6 @@ use crate::consensus_handler::ConsensusHandlerInitializer;
 use crate::consensus_manager::{
     ConsensusManagerMetrics, ConsensusManagerTrait, Running, RunningLockGuard,
 };
-use crate::consensus_validator::SuiTxValidator;
 use async_trait::async_trait;
 use fastcrypto::traits::KeyPair;
 use mysten_metrics::RegistryService;
@@ -96,7 +95,8 @@ impl ConsensusManagerTrait for NarwhalManager {
         config: &NodeConfig,
         epoch_store: Arc<AuthorityPerEpochStore>,
         consensus_handler_initializer: ConsensusHandlerInitializer,
-        tx_validator: SuiTxValidator,
+        tx_validator: impl narwhal_worker::TransactionValidator,
+        // tx_validator: SuiTxValidator,
     ) {
         let system_state = epoch_store.epoch_start_state();
         let epoch = epoch_store.epoch();
