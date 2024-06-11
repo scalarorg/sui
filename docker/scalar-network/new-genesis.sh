@@ -20,5 +20,5 @@ echo "Creating directory $DIR..."
 mkdir "$DIR"
 echo "$DIR directory created."
 
-./generate.py --genesis-template compose-consensus.yaml --target-directory "$DIR"
+
 ./generate.py --genesis-template compose-validators.yaml --target-directory "$DIR"

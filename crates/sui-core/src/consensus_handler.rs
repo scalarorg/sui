@@ -46,7 +46,7 @@ use crate::{
     scoring_decision::update_low_scoring_authorities,
     transaction_manager::TransactionManager,
 };
-
+pub mod scalar;
 pub struct ConsensusHandlerInitializer {
     state: Arc<AuthorityState>,
     checkpoint_service: Arc<CheckpointService>,

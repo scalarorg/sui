@@ -1,0 +1,149 @@
+version: "3"
+
+services:
+  execution1:
+    networks:
+      scalar-network:
+        ipv4_address: 10.0.0.11
+    image: scalar/execution:latest
+    container_name: execution1
+    hostname: execution1
+    environment:
+      - CONSENSUS_ADDR=http://docker.host.internal:8081
+      - RUST_BACKTRACE=1
+      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RPC_WORKER_THREAD=12
+    volumes:
+      - ./genesis/files/validator1-8080.yaml:/opt/scalar/config/validator.yaml:ro
+      - ./genesis/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
+      - /tmp/scalar/db1:/opt/scalar/db:rw
+    command:
+      [
+        "/usr/local/bin/scalar",
+        "--config-path",
+        "/opt/scalar/config/validator.yaml"
+      ]
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "1g"
+  execution2:
+    networks:
+      scalar-network:
+        ipv4_address: 10.0.0.12
+    image: scalar/execution:latest
+    container_name: execution2
+    hostname: execution2
+    environment:
+      - CONSENSUS_ADDR=http://docker.host.internal:8082
+      - RUST_BACKTRACE=1
+      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RPC_WORKER_THREAD=12
+    volumes:
+      - ./genesis/files/validator2-8080.yaml:/opt/scalar/config/validator.yaml:ro
+      - ./genesis/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
+      - /tmp/scalar/db2:/opt/scalar/db:rw
+    command:
+      [
+        "/usr/local/bin/scalar",
+        "--config-path",
+        "/opt/scalar/config/validator.yaml"
+      ]
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "1g"
+  execution3:
+    networks:
+      scalar-network:
+        ipv4_address: 10.0.0.13
+    image: scalar/execution:latest
+    container_name: execution3
+    hostname: execution3
+    environment:
+      - CONSENSUS_ADDR=http://docker.host.internal:8083
+      - RUST_BACKTRACE=1
+      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RPC_WORKER_THREAD=12
+    volumes:
+      - ./genesis/files/validator3-8080.yaml:/opt/scalar/config/validator.yaml:ro
+      - ./genesis/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
+      - /tmp/scalar/db3:/opt/scalar/db:rw
+    command:
+      [
+        "/usr/local/bin/scalar",
+        "--config-path",
+        "/opt/scalar/config/validator.yaml"
+      ]
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "1g"
+  execution4:
+    networks:
+      scalar-network:
+        ipv4_address: 10.0.0.14
+    image: scalar/execution:latest
+    container_name: execution4
+    hostname: execution4
+    environment:
+      - CONSENSUS_ADDR=http://docker.host.internal:8084
+      - RUST_BACKTRACE=1
+      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RPC_WORKER_THREAD=12
+    volumes:
+      - ./genesis/files/validator4-8080.yaml:/opt/scalar/config/validator.yaml:ro
+      - ./genesis/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
+      - /tmp/scalar/db4:/opt/scalar/db:rw
+    command:
+      [
+        "/usr/local/bin/scalar",
+        "--config-path",
+        "/opt/scalar/config/validator.yaml"
+      ]
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "1g"
+  fullnode1:
+    networks:
+      scalar-network:
+        ipv4_address: 10.0.0.15
+    image: mysten/sui-node:mainnet
+    hostname: fullnode1
+    container_name: fullnode1
+    environment:
+      - RUST_BACKTRACE=1
+      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RPC_WORKER_THREAD=12
+    volumes:
+      - ./genesis/static/fullnode.yaml:/opt/scalar/config/fullnode.yaml:ro
+      - ./genesis/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
+      - /tmp/scalar/db5:/opt/scalar/db:rw
+    command:
+      [
+        "/usr/local/bin/sui-node",
+        "--config-path",
+        "/opt/scalar/config/fullnode.yaml"
+      ]
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "1g"
+
+networks:
+  scalar-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
