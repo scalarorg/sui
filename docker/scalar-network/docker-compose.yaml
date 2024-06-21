@@ -1,15 +1,136 @@
 version: "3"
 
 services:
+  scalaris1:
+    networks:
+      scalar-network:
+        ipv4_address: 10.0.10.11
+    image: scalaris:latest
+    container_name: scalar-consensus1
+    hostname: scalaris1
+    environment:
+      - CONSENSUS=mysticeti
+      - RUST_BACKTRACE=1
+      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RPC_WORKER_THREAD=12
+    volumes:
+      - ${SCALARIS_GENESIS}/files/scalaris1-8080.yaml:/opt/scalaris/config/scalaris.yaml:ro
+      - ${SCALARIS_GENESIS}/files/genesis.blob:/opt/scalaris/config/genesis.blob:ro
+      - /tmp/scalaris/db1:/opt/scalaris/db:rw
+    command:
+      [
+        "/usr/local/bin/scalaris",
+        "--config-path",
+        "/opt/scalaris/config/scalaris.yaml"
+      ]
+    ports:
+      - "8081:8080"
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "1g"
+  scalaris2:
+    networks:
+      scalar-network:
+        ipv4_address: 10.0.10.12
+    image: scalaris:latest
+    container_name: scalar-consensus2
+    hostname: scalaris2
+    environment:
+      - CONSENSUS=mysticeti
+      - RUST_BACKTRACE=1
+      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RPC_WORKER_THREAD=12
+    volumes:
+      - ${SCALARIS_GENESIS}/files/scalaris2-8080.yaml:/opt/scalaris/config/scalaris.yaml:ro
+      - ${SCALARIS_GENESIS}/files/genesis.blob:/opt/scalaris/config/genesis.blob:ro
+      - /tmp/scalaris/db2:/opt/scalaris/db:rw
+    command:
+      [
+        "/usr/local/bin/scalaris",
+        "--config-path",
+        "/opt/scalaris/config/scalaris.yaml"
+      ]
+    ports:
+      - "8082:8080"
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "1g"
+  scalaris3:
+    networks:
+      scalar-network:
+        ipv4_address: 10.0.10.13
+    image: scalaris:latest
+    container_name: scalar-consensus3
+    hostname: scalaris3
+    environment:
+      - CONSENSUS=mysticeti
+      - RUST_BACKTRACE=1
+      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RPC_WORKER_THREAD=12
+    volumes:
+      - ${SCALARIS_GENESIS}/files/scalaris3-8080.yaml:/opt/scalaris/config/scalaris.yaml:ro
+      - ${SCALARIS_GENESIS}/files/genesis.blob:/opt/scalaris/config/genesis.blob:ro
+      - /tmp/scalaris/db3:/opt/scalaris/db:rw
+    command:
+      [
+        "/usr/local/bin/scalaris",
+        "--config-path",
+        "/opt/scalaris/config/scalaris.yaml"
+      ]
+    ports:
+      - "8083:8080"
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "1g"
+  scalaris4:
+    networks:
+      scalar-network:
+        ipv4_address: 10.0.10.14
+    image: scalaris:latest
+    container_name: scalar-consensus4
+    hostname: scalaris4
+    environment:
+      - CONSENSUS=mysticeti
+      - RUST_BACKTRACE=1
+      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RPC_WORKER_THREAD=12
+    volumes:
+      - ${SCALARIS_GENESIS}/files/scalaris4-8080.yaml:/opt/scalaris/config/scalaris.yaml:ro
+      - ${SCALARIS_GENESIS}/files/genesis.blob:/opt/scalaris/config/genesis.blob:ro
+      - /tmp/scalaris/db4:/opt/scalaris/db:rw
+    command:
+      [
+        "/usr/local/bin/scalaris",
+        "--config-path",
+        "/opt/scalaris/config/scalaris.yaml"
+      ]
+    ports:
+      - "8084:8080"
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "1g"
+
   execution1:
     networks:
       scalar-network:
-        ipv4_address: 10.0.0.11
+        ipv4_address: 10.0.10.21
     image: scalar/execution:latest
-    container_name: execution1
+    container_name: scalar-execution1
     hostname: execution1
     environment:
-      - CONSENSUS_ADDR=http://docker.host.internal:8081
+      - CONSENSUS_ADDR=http://scalaris1:8080
       - RUST_BACKTRACE=1
       - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
       - RPC_WORKER_THREAD=12
@@ -32,12 +153,12 @@ services:
   execution2:
     networks:
       scalar-network:
-        ipv4_address: 10.0.0.12
+        ipv4_address: 10.0.10.22
     image: scalar/execution:latest
-    container_name: execution2
+    container_name: scalar-execution2
     hostname: execution2
     environment:
-      - CONSENSUS_ADDR=http://docker.host.internal:8082
+      - CONSENSUS_ADDR=http://scalaris2:8080
       - RUST_BACKTRACE=1
       - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
       - RPC_WORKER_THREAD=12
@@ -57,66 +178,10 @@ services:
       options:
         max-file: "10"
         max-size: "1g"
-  execution3:
-    networks:
-      scalar-network:
-        ipv4_address: 10.0.0.13
-    image: scalar/execution:latest
-    container_name: execution3
-    hostname: execution3
-    environment:
-      - CONSENSUS_ADDR=http://docker.host.internal:8083
-      - RUST_BACKTRACE=1
-      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
-      - RPC_WORKER_THREAD=12
-    volumes:
-      - ./genesis/files/validator3-8080.yaml:/opt/scalar/config/validator.yaml:ro
-      - ./genesis/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
-      - /tmp/scalar/db3:/opt/scalar/db:rw
-    command:
-      [
-        "/usr/local/bin/scalar",
-        "--config-path",
-        "/opt/scalar/config/validator.yaml"
-      ]
-    restart: on-failure
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "10"
-        max-size: "1g"
-  execution4:
-    networks:
-      scalar-network:
-        ipv4_address: 10.0.0.14
-    image: scalar/execution:latest
-    container_name: execution4
-    hostname: execution4
-    environment:
-      - CONSENSUS_ADDR=http://docker.host.internal:8084
-      - RUST_BACKTRACE=1
-      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
-      - RPC_WORKER_THREAD=12
-    volumes:
-      - ./genesis/files/validator4-8080.yaml:/opt/scalar/config/validator.yaml:ro
-      - ./genesis/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
-      - /tmp/scalar/db4:/opt/scalar/db:rw
-    command:
-      [
-        "/usr/local/bin/scalar",
-        "--config-path",
-        "/opt/scalar/config/validator.yaml"
-      ]
-    restart: on-failure
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "10"
-        max-size: "1g"
   fullnode1:
     networks:
       scalar-network:
-        ipv4_address: 10.0.0.15
+        ipv4_address: 10.0.10.25
     image: mysten/sui-node:mainnet
     hostname: fullnode1
     container_name: fullnode1
@@ -140,10 +205,23 @@ services:
       options:
         max-file: "10"
         max-size: "1g"
-
+  tool:
+    networks:
+      scalar-network:
+        ipv4_address: 10.0.10.30
+    image: docker.io/mysten/sui-tools:mainnet-v1.19.1
+    hostname: client
+    container_name: client
+    command: sleep infinity
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "1g"
 networks:
   scalar-network:
     driver: bridge
     ipam:
       config:
-        - subnet: 10.0.0.0/24
+        - subnet: 10.0.10.0/24

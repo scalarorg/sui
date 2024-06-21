@@ -14,7 +14,7 @@ use sui_types::messages_consensus::ConsensusTransaction;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedSender};
 use tokio::time::{sleep, timeout};
 use tonic::transport::Channel;
-use tracing::{debug, info};
+use tracing::{debug, info, warn};
 
 use crate::proto::{ConsensusApiClient, ExternalTransaction, GrpcConsensusOutput};
 
@@ -44,7 +44,10 @@ impl GrpcConsensusClient {
     ) -> SuiResult<tonic::Response<tonic::codec::Streaming<GrpcConsensusOutput>>> {
         let consensus_address =
             std::env::var("CONSENSUS_ADDR").unwrap_or(String::from("http://127.0.0.1:8080"));
-
+        info!(
+            "Try to connect to consensus server at {:?}",
+            consensus_address.as_str()
+        );
         // We expect this to get called during the SUI process start. After that at least one
         // object will have initialised and won't need to call again.
         const START_TIMEOUT: Duration = Duration::from_secs(30);
@@ -54,12 +57,17 @@ impl GrpcConsensusClient {
                 if let Ok(client) = ConsensusApiClient::connect(consensus_address.clone()).await {
                     return client;
                 } else {
+                    warn!(
+                        "Cannot connect to the consensus server {:?}",
+                        &consensus_address
+                    );
                     sleep(RETRY_INTERVAL).await;
                 }
             }
         })
         .await
         {
+            debug!("Init transaction stream");
             let (tx_transaction, mut rx_transaction) = unbounded_channel();
             self.set_tx_sender(Arc::new(tx_transaction));
             let chain_id = self.chain_id.to_string();

@@ -6,6 +6,10 @@ This compose brings up 3 validators, 1 fullnode, and 1 stress (load gen) client
 
 Steps for running:
 
+0. Prepare Scalaris image
+Follow document in scalaris repo
+
+
 1. Build scalar image
 
 ```
