@@ -1,3 +1,12 @@
 #!/bin/sh
 DIR="$( cd "$( dirname "$0" )" && pwd )"
-docker-compose -f ${DIR}/docker-compose.yaml --env-file ${DIR}/.env up -d
+
+up() {
+    docker-compose -f ${DIR}/docker-compose.yaml --env-file ${DIR}/.env up -d
+}
+
+down() {
+    docker-compose -f ${DIR}/docker-compose.yaml down
+}
+
+$@
