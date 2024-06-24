@@ -7,6 +7,7 @@ use consensus_core::CommitDigest;
 use fastcrypto::hash::HashFunction;
 use serde::{Deserialize, Serialize};
 use sui_types::{crypto::DefaultHash, digests::ConsensusCommitDigest, messages_consensus::ConsensusTransaction};
+use tracing::{info, debug};
 
 use crate::{
     checkpoints::CheckpointServiceNotify,
@@ -59,6 +60,7 @@ impl ConsensusOutputAPI for ConsensusOutput {
                             Ok(transaction) => transaction,
                             Err(err) => {
                                 // This should have been prevented by Narwhal batch verification.
+                                info!("Error while deserializing transaction into ConsensusTransaction");
                                 panic!(
                                     "Unexpected malformed transaction (failed to deserialize): {}\n Transaction={:?}",
                                     err, serialized_transaction
@@ -110,7 +112,8 @@ impl Display for ConsensusOutput {
 }
 
 impl<C: CheckpointServiceNotify + Send + Sync> ConsensusHandler<C> {
-    pub async fn handle_scalaris_ouput(&mut self, consensus_output: ConsensusOutput) {
+    pub async fn handle_scalaris_output(&mut self, consensus_output: ConsensusOutput) {
+        debug!("Handle scalaris ouput");
         self.handle_consensus_output_internal(consensus_output)
             .await;
     }

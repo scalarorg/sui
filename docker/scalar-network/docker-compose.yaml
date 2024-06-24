@@ -11,12 +11,12 @@ services:
     environment:
       - CONSENSUS=mysticeti
       - RUST_BACKTRACE=1
-      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RUST_LOG=info,sui_core=info,sui_network=info,sui_node=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
       - RPC_WORKER_THREAD=12
     volumes:
-      - ${SCALARIS_GENESIS}/files/scalaris1-8080.yaml:/opt/scalaris/config/scalaris.yaml:ro
-      - ${SCALARIS_GENESIS}/files/genesis.blob:/opt/scalaris/config/genesis.blob:ro
-      - /tmp/scalaris/db1:/opt/scalaris/db:rw
+      - ${PATH_SCALARIS_GENESIS}/files/scalaris1-8080.yaml:/opt/scalaris/config/scalaris.yaml:ro
+      - ${PATH_SCALARIS_GENESIS}/files/genesis.blob:/opt/scalaris/config/genesis.blob:ro
+      - ${PATH_SCALARIS}/db1:/opt/scalaris/db:rw
     command:
       [
         "/usr/local/bin/scalaris",
@@ -41,12 +41,12 @@ services:
     environment:
       - CONSENSUS=mysticeti
       - RUST_BACKTRACE=1
-      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RUST_LOG=info,sui_core=info,sui_network=info,sui_node=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
       - RPC_WORKER_THREAD=12
     volumes:
-      - ${SCALARIS_GENESIS}/files/scalaris2-8080.yaml:/opt/scalaris/config/scalaris.yaml:ro
-      - ${SCALARIS_GENESIS}/files/genesis.blob:/opt/scalaris/config/genesis.blob:ro
-      - /tmp/scalaris/db2:/opt/scalaris/db:rw
+      - ${PATH_SCALARIS_GENESIS}/files/scalaris2-8080.yaml:/opt/scalaris/config/scalaris.yaml:ro
+      - ${PATH_SCALARIS_GENESIS}/files/genesis.blob:/opt/scalaris/config/genesis.blob:ro
+      - ${PATH_SCALARIS}/db2:/opt/scalaris/db:rw
     command:
       [
         "/usr/local/bin/scalaris",
@@ -71,12 +71,12 @@ services:
     environment:
       - CONSENSUS=mysticeti
       - RUST_BACKTRACE=1
-      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RUST_LOG=info,sui_core=info,sui_network=info,sui_node=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
       - RPC_WORKER_THREAD=12
     volumes:
-      - ${SCALARIS_GENESIS}/files/scalaris3-8080.yaml:/opt/scalaris/config/scalaris.yaml:ro
-      - ${SCALARIS_GENESIS}/files/genesis.blob:/opt/scalaris/config/genesis.blob:ro
-      - /tmp/scalaris/db3:/opt/scalaris/db:rw
+      - ${PATH_SCALARIS_GENESIS}/files/scalaris3-8080.yaml:/opt/scalaris/config/scalaris.yaml:ro
+      - ${PATH_SCALARIS_GENESIS}/files/genesis.blob:/opt/scalaris/config/genesis.blob:ro
+      - ${PATH_SCALARIS}/db3:/opt/scalaris/db:rw
     command:
       [
         "/usr/local/bin/scalaris",
@@ -101,12 +101,12 @@ services:
     environment:
       - CONSENSUS=mysticeti
       - RUST_BACKTRACE=1
-      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RUST_LOG=info,sui_core=info,sui_network=info,sui_node=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
       - RPC_WORKER_THREAD=12
     volumes:
-      - ${SCALARIS_GENESIS}/files/scalaris4-8080.yaml:/opt/scalaris/config/scalaris.yaml:ro
-      - ${SCALARIS_GENESIS}/files/genesis.blob:/opt/scalaris/config/genesis.blob:ro
-      - /tmp/scalaris/db4:/opt/scalaris/db:rw
+      - ${PATH_SCALARIS_GENESIS}/files/scalaris4-8080.yaml:/opt/scalaris/config/scalaris.yaml:ro
+      - ${PATH_SCALARIS_GENESIS}/files/genesis.blob:/opt/scalaris/config/genesis.blob:ro
+      - ${PATH_SCALARIS}/db4:/opt/scalaris/db:rw
     command:
       [
         "/usr/local/bin/scalaris",
@@ -132,19 +132,20 @@ services:
     environment:
       - CONSENSUS_ADDR=http://scalaris1:8080
       - RUST_BACKTRACE=1
-      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RUST_LOG=info,sui_core=info,sui_network=info,sui_node=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
       - RPC_WORKER_THREAD=12
     volumes:
       - ./genesis/files/validator1-8080.yaml:/opt/scalar/config/validator.yaml:ro
       - ./genesis/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
-      - /tmp/scalar/db1:/opt/scalar/db:rw
+      - ${PATH_SCALAR_DB}/db1:/opt/scalar/db:rw
     command:
       [
         "/usr/local/bin/scalar",
         "--config-path",
         "/opt/scalar/config/validator.yaml"
       ]
-    restart: on-failure
+    # restart: on-failure
+    restart: no
     logging:
       driver: "json-file"
       options:
@@ -160,19 +161,20 @@ services:
     environment:
       - CONSENSUS_ADDR=http://scalaris2:8080
       - RUST_BACKTRACE=1
-      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RUST_LOG=info,sui_core=info,sui_network=info,sui_node=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
       - RPC_WORKER_THREAD=12
     volumes:
       - ./genesis/files/validator2-8080.yaml:/opt/scalar/config/validator.yaml:ro
       - ./genesis/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
-      - /tmp/scalar/db2:/opt/scalar/db:rw
+      - ${PATH_SCALAR_DB}/db2:/opt/scalar/db:rw
     command:
       [
         "/usr/local/bin/scalar",
         "--config-path",
         "/opt/scalar/config/validator.yaml"
       ]
-    restart: on-failure
+    # restart: on-failure
+    restart: no
     logging:
       driver: "json-file"
       options:
@@ -187,19 +189,19 @@ services:
     container_name: fullnode1
     environment:
       - RUST_BACKTRACE=1
-      - RUST_LOG=info,sui_core=debug,sui_network=debug,sui_node=debug,narwhal=debug,narwhal-primary::helper=info,jsonrpsee=error
+      - RUST_LOG=info,sui_core=info,sui_network=info,sui_node=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
       - RPC_WORKER_THREAD=12
     volumes:
       - ./genesis/static/fullnode.yaml:/opt/scalar/config/fullnode.yaml:ro
       - ./genesis/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
-      - /tmp/scalar/db5:/opt/scalar/db:rw
+      - ${PATH_SCALAR_DB}/fullnode1:/opt/scalar/db:rw
     command:
       [
         "/usr/local/bin/sui-node",
         "--config-path",
         "/opt/scalar/config/fullnode.yaml"
       ]
-    restart: on-failure
+    restart: no
     logging:
       driver: "json-file"
       options:
@@ -213,7 +215,7 @@ services:
     hostname: client
     container_name: client
     command: sleep infinity
-    restart: on-failure
+    restart: no
     logging:
       driver: "json-file"
       options:

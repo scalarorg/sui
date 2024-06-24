@@ -51,7 +51,7 @@ impl ConsensusManager {
                     Ok(grpc_output) => {
                         let consensus_output: ConsensusOutput = grpc_output.into();
                         consensus_handler
-                            .handle_scalaris_ouput(consensus_output)
+                            .handle_scalaris_output(consensus_output)
                             .await;
                     }
                     Err(err) => error!("{:?}", err),
