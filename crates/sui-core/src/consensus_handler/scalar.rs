@@ -113,7 +113,7 @@ impl Display for ConsensusOutput {
 
 impl<C: CheckpointServiceNotify + Send + Sync> ConsensusHandler<C> {
     pub async fn handle_scalaris_output(&mut self, consensus_output: ConsensusOutput) {
-        debug!("Handle scalaris ouput");
+        debug!("Handle scalaris ouput. Leader round {}, last commited round {}", consensus_output.leader_round, self.last_consensus_stats.index.last_committed_round);
         self.handle_consensus_output_internal(consensus_output)
             .await;
     }

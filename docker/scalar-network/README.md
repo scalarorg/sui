@@ -14,7 +14,16 @@ Follow document in scalaris repo
 
 ```
 cd docker/scalar-network
-docker/scalar-network/build.sh -t scalar/execution:latest
+./build.sh -t scalar/execution:latest
+
+```
+
+Build scalar within running container
+
+```
+cd docker/scalar-network
+./build_container.sh -t scalar/execution:latest
+
 ```
 
 2. Build genesis (Required for first startup)

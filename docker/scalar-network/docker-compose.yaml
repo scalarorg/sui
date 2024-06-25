@@ -11,7 +11,7 @@ services:
     environment:
       - CONSENSUS=mysticeti
       - RUST_BACKTRACE=1
-      - RUST_LOG=info,sui_core=info,sui_network=info,sui_node=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
+      - RUST_LOG=info,sui_core=info,sui_network=info,sui_node=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error,scalaris::consensus_handler=debug
       - RPC_WORKER_THREAD=12
     volumes:
       - ${PATH_SCALARIS_GENESIS}/files/scalaris1-8080.yaml:/opt/scalaris/config/scalaris.yaml:ro
@@ -132,17 +132,17 @@ services:
     environment:
       - CONSENSUS_ADDR=http://scalaris1:8080
       - RUST_BACKTRACE=1
-      - RUST_LOG=info,sui_core=info,sui_network=info,sui_node=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
+      - RUST_LOG=info,sui_core=info,sui_core::consensus_handler=debug,sui_network=info,sui_node=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
       - RPC_WORKER_THREAD=12
     volumes:
-      - ./genesis/files/validator1-8080.yaml:/opt/scalar/config/validator.yaml:ro
-      - ./genesis/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
+      - ${PATH_SCALARIS_GENESIS}/files/scalaris1-8080.yaml:/opt/scalar/config/scalaris.yaml:ro
+      - ${PATH_SCALARIS_GENESIS}/files/genesis.blob:/opt/scalaris/config/genesis.blob:ro
       - ${PATH_SCALAR_DB}/db1:/opt/scalar/db:rw
     command:
       [
         "/usr/local/bin/scalar",
         "--config-path",
-        "/opt/scalar/config/validator.yaml"
+        "/opt/scalar/config/scalaris.yaml"
       ]
     # restart: on-failure
     restart: no
@@ -164,14 +164,14 @@ services:
       - RUST_LOG=info,sui_core=info,sui_network=info,sui_node=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
       - RPC_WORKER_THREAD=12
     volumes:
-      - ./genesis/files/validator2-8080.yaml:/opt/scalar/config/validator.yaml:ro
-      - ./genesis/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
+      - ${PATH_SCALARIS_GENESIS}/files/scalaris2-8080.yaml:/opt/scalar/config/scalaris.yaml:ro
+      - ${PATH_SCALARIS_GENESIS}/files/genesis.blob:/opt/scalaris/config/genesis.blob:ro
       - ${PATH_SCALAR_DB}/db2:/opt/scalar/db:rw
     command:
       [
         "/usr/local/bin/scalar",
         "--config-path",
-        "/opt/scalar/config/validator.yaml"
+        "/opt/scalar/config/scalaris.yaml"
       ]
     # restart: on-failure
     restart: no
@@ -192,8 +192,8 @@ services:
       - RUST_LOG=info,sui_core=info,sui_network=info,sui_node=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
       - RPC_WORKER_THREAD=12
     volumes:
-      - ./genesis/static/fullnode.yaml:/opt/scalar/config/fullnode.yaml:ro
-      - ./genesis/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
+      - ${PATH_SCALARIS_GENESIS}/static/fullnode.yaml:/opt/scalar/config/fullnode.yaml:ro
+      - ${PATH_SCALARIS_GENESIS}/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
       - ${PATH_SCALAR_DB}/fullnode1:/opt/scalar/db:rw
     command:
       [
