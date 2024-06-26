@@ -180,27 +180,31 @@ services:
       options:
         max-file: "10"
         max-size: "1g"
-  fullnode1:
+  fullnode:
     networks:
       scalar-network:
         ipv4_address: 10.0.10.25
-    image: mysten/sui-node:mainnet
-    hostname: fullnode1
-    container_name: fullnode1
+    image: scalar/execution:latest
+    #image: mysten/sui-node:mainnet
+    hostname: fullnode
+    container_name: fullnode
     environment:
       - RUST_BACKTRACE=1
-      - RUST_LOG=info,sui_core=info,sui_network=info,sui_node=info,narwhal=info,narwhal-primary::helper=info,jsonrpsee=error
+      - RUST_LOG=debug,sui_core=debug,sui_network=debug,sui_node=debug,jsonrpsee=error
       - RPC_WORKER_THREAD=12
     volumes:
       - ${PATH_SCALARIS_GENESIS}/static/fullnode.yaml:/opt/scalar/config/fullnode.yaml:ro
       - ${PATH_SCALARIS_GENESIS}/files/genesis.blob:/opt/scalar/config/genesis.blob:ro
-      - ${PATH_SCALAR_DB}/fullnode1:/opt/scalar/db:rw
+      - ${PATH_SCALAR_DB}/fullnode:/opt/scalar/db:rw
     command:
       [
-        "/usr/local/bin/sui-node",
+        "/usr/local/bin/scalar",
         "--config-path",
         "/opt/scalar/config/fullnode.yaml"
       ]
+    ports:
+      - 9000:9000
+      - 9184:9184
     restart: no
     logging:
       driver: "json-file"
@@ -211,10 +215,13 @@ services:
     networks:
       scalar-network:
         ipv4_address: 10.0.10.30
-    image: docker.io/mysten/sui-tools:mainnet-v1.19.1
+    #image: docker.io/mysten/sui-tools:mainnet-v1.19.1
+    image: scalar/sui-tools
     hostname: client
     container_name: client
     command: sleep infinity
+    volumes:
+      - ./sui_config:/root/.sui/sui_config
     restart: no
     logging:
       driver: "json-file"

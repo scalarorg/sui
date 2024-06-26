@@ -30,14 +30,29 @@ cd docker/scalar-network
 
 ```
 cd docker/scalar-network
-docker build --file genesis.Dockerfile --output "type=local,dest=./" .
+./build_genesis.sh
 ```
 
-3. run compose
+3. Build sui tool
+
+ ```
+cd docker/sui-tools
+./build.sh -t docker.io/mysten/sui-tools:latest
+
+``` 
+4. run compose
 
 ```
 (optional) `rm -r /tmp/scalar`
 docker compose up
+```
+
+# Demo step
+
+1. Init client
+```
+sui client
+cp $DIR/sui_config/genesis.blob /tmp/scalar/scalaris/genesis/files
 ```
 
 

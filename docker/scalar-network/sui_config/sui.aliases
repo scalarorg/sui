@@ -1,0 +1,27 @@
+[
+  {
+    "alias": "lucid-hiddenite",
+    "public_key_base64": "AF+MJbWbJuJpacBqUBg03nw3FI1gVECVkWBC3UuEAT2w",
+    "address": "0x7ffb8e02d758589124caac18e8e0a008c3fe7ece562896167a31defb4f330c28"
+  },
+  {
+    "alias": "epic-chrysoberyl",
+    "public_key_base64": "AJ2COUoYmv+b8d0q6AD+AL7meEyIwULCalG3kdUysAaK",
+    "address": "0x8043ae002e597fa04c5d5d75fda2fc13d4bcd054499b036532a725025d4776a2"
+  },
+  {
+    "alias": "keen-euclase",
+    "public_key_base64": "AB3cGmj4sPpikZW1mKXr+q1jHWnZe2Lq+AWWj3XzJqxH",
+    "address": "0x940d315ae337acdf9ce7d70ad9d9d282098c40083025d406b5426ff8f8a8f66d"
+  },
+  {
+    "alias": "musing-jet",
+    "public_key_base64": "ADXYB95WEEgy9zy/sBKxAGUqN557/C+DG/MIL2XCdZWy",
+    "address": "0xba6f685340c4112e364b1aa0451230d6458821b6777793a865597ce16352136f"
+  },
+  {
+    "alias": "determined-hypersthene",
+    "public_key_base64": "AJqvLzlD7oPuH3/2l3mVEeBJ+1tWs3BAE8kT7RqOsaSM",
+    "address": "0xe13a43801eccbc5e3ca631af09f556c9fa4bde28fe945d0897b946394f04f192"
+  }
+]
