@@ -22,7 +22,7 @@ Build scalar within running container
 
 ```
 cd docker/scalar-network
-./build_container.sh -t scalar/execution:latest
+./build.sh scalar -t scalar/execution:latest
 
 ```
 
@@ -30,14 +30,14 @@ cd docker/scalar-network
 
 ```
 cd docker/scalar-network
-./build_genesis.sh
+./build.sh genesis
 ```
 
 3. Build sui tool
 
  ```
-cd docker/sui-tools
-./build.sh -t docker.io/mysten/sui-tools:latest
+cd docker/scalar-network
+./build.sh tools -t scalar/sui-tools:latest
 
 ``` 
 4. run compose

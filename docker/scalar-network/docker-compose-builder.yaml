@@ -5,6 +5,7 @@ services:
     build:
       context: ./
       dockerfile: ./rust.Dockerfile
+    image: scalar-builder
     container_name: scalar-builder
     #volumes:
     #  - ../../:/scalar

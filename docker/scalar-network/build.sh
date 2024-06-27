@@ -1,35 +1,72 @@
 #!/bin/sh
-# Copyright (c) Mysten Labs, Inc.
-# SPDX-License-Identifier: Apache-2.0
-
-# fast fail.
-set -e
-
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-DOCKERFILE="$DIR/builder.Dockerfile"
+CONTAINER_BUILDER=scalar-builder
+DOCKERFILE="$DIR/runner.Dockerfile"
 GIT_REVISION="$(git describe --always --abbrev=12 --dirty --exclude '*')"
 BUILD_DATE="$(date -u +'%Y-%m-%d')"
+PROFILE=release
 
-# option to build using debug symbols
-if [ "$1" = "--debug-symbols" ]; then
-	PROFILE="bench"
-	echo "Building with full debug info enabled ... WARNING: binary size might significantly increase"
-	shift
-else
-	PROFILE="release"
-fi
+scalar() {
+	docker-compose -f ${DIR}/docker-compose-builder.yaml up -d
+	cd ${REPO_ROOT}
+	docker cp Cargo.toml ${CONTAINER_BUILDER}:/workspace
+	docker cp Cargo.lock ${CONTAINER_BUILDER}:/workspace
+	docker cp consensus ${CONTAINER_BUILDER}:/workspace
+	docker cp crates ${CONTAINER_BUILDER}:/workspace
+	docker cp sui-execution ${CONTAINER_BUILDER}:/workspace
+	docker cp narwhal ${CONTAINER_BUILDER}:/workspace
+	docker cp external-crates ${CONTAINER_BUILDER}:/workspace
+	docker exec ${CONTAINER_BUILDER} cargo build --profile ${PROFILE} --bin scalar
+	docker cp ${CONTAINER_BUILDER}:/workspace/target/release/scalar ${REPO_ROOT}/scalar
+	docker build -f "$DOCKERFILE" "$REPO_ROOT" \
+		--build-arg GIT_REVISION="$GIT_REVISION" \
+		--build-arg BUILD_DATE="$BUILD_DATE" \
+		--build-arg PROFILE="$PROFILE" \
+		"$@"
+	rm ${REPO_ROOT}/scalar
+}
 
-echo
-echo "Building sui-node docker image"
-echo "Dockerfile: \t$DOCKERFILE"
-echo "docker context: $REPO_ROOT"
-echo "build date: \t$BUILD_DATE"
-echo "git revision: \t$GIT_REVISION"
-echo
+genesis() {
+	OUTDIR=${1:-/tmp/scalar}
+	docker build --file ${DIR}/genesis.Dockerfile --output "type=local,dest=./" .
+	rm -r $OUTDIR
+	mkdir -p ${OUTDIR}/genesis
+	cp -R genesis/files ${OUTDIR}/genesis
+	cp -R genesis/static ${OUTDIR}/genesis
+}
 
-docker build -f "$DOCKERFILE" "$REPO_ROOT" \
-	--build-arg GIT_REVISION="$GIT_REVISION" \
-	--build-arg BUILD_DATE="$BUILD_DATE" \
-	--build-arg PROFILE="$PROFILE" \
-	"$@"
+tools() {
+	docker-compose -f ${DIR}/docker-compose-builder.yaml up -d
+	cd ${REPO_ROOT}
+	docker cp Cargo.toml ${CONTAINER_BUILDER}:/workspace
+	docker cp Cargo.lock ${CONTAINER_BUILDER}:/workspace
+	docker cp consensus ${CONTAINER_BUILDER}:/workspace
+	docker cp crates ${CONTAINER_BUILDER}:/workspace
+	docker cp sui-execution ${CONTAINER_BUILDER}:/workspace
+	docker cp narwhal ${CONTAINER_BUILDER}:/workspace
+	docker cp external-crates ${CONTAINER_BUILDER}:/workspace
+	declare -a bins=("sui-node" "sui-bridge" "sui-bridge-cli" "sui-proxy" "sui" "sui-faucet" "sui-analytics-indexer" "sui-cluster-test" "sui-tool")
+	CMD_BINS="";
+	for bin in "${bins[@]}"
+	do
+		CMD_BINS="${CMD_BINS} --bin ${bin}"
+	done
+	docker exec ${CONTAINER_BUILDER} cargo build --profile ${PROFILE} ${CMD_BINS}
+	for bin in "${bins[@]}"
+	do
+		docker cp ${CONTAINER_BUILDER}:/workspace/target/release/${bin} ${REPO_ROOT}/${bin}
+	done
+
+	docker build -f "$DIR/tools.Dockerfile" "$REPO_ROOT" \
+		--build-arg GIT_REVISION="$GIT_REVISION" \
+		--build-arg BUILD_DATE="$BUILD_DATE" \
+		--build-arg PROFILE="$PROFILE" \
+		"$@"
+	for bin in "${bins[@]}"
+	do
+		rm ${REPO_ROOT}/${bin}
+	done
+}
+
+$@
