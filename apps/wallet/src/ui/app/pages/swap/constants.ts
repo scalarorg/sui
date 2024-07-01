@@ -19,6 +19,7 @@ export type FormValues = typeof initialValues;
 
 export enum Coins {
 	SUI = 'SUI',
+	SCALAR = 'SCALAR',
 	USDC = 'USDC',
 	USDT = 'USDT',
 	WETH = 'WETH',

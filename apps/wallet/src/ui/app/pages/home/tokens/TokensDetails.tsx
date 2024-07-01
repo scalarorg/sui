@@ -310,7 +310,8 @@ function getFallbackSymbol(coinType: string) {
 function TokenDetails({ coinType }: TokenDetailsProps) {
 	const isDefiWalletEnabled = useIsWalletDefiEnabled();
 	const [interstitialDismissed, setInterstitialDismissed] = useState<boolean>(false);
-	const activeCoinType = coinType || SUI_TYPE_ARG;
+	// const activeCoinType = coinType || SUI_TYPE_ARG;
+	const activeCoinType = coinType || "0x1::scalar::SCALAR";
 	const activeAccount = useActiveAccount();
 	const activeAccountAddress = activeAccount?.address;
 	const domainName = useResolveSuiNSName(activeAccountAddress);
@@ -449,8 +450,8 @@ function TokenDetails({ coinType }: TokenDetailsProps) {
 											<div className="flex flex-col flex-nowrap justify-center items-center text-center px-2.5">
 												<Text variant="pBodySmall" color="gray-80" weight="normal">
 													{isMainnet
-														? 'Buy SUI to get started'
-														: 'To send transactions on the Sui network, you need SUI in your wallet.'}
+														? 'Buy SCALAR to get started'
+														: 'To send transactions on the Scalar network, you need SCALAR in your wallet.'}
 												</Text>
 											</div>
 											<FaucetRequestButton />

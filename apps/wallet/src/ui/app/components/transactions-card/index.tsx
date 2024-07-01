@@ -88,7 +88,7 @@ export function TransactionCard({
 									</Text>
 									{showSuiSymbol && (
 										<Text color="gray-90" weight="normal" variant="subtitleSmall">
-											SUI
+											SCALAR
 										</Text>
 									)}
 								</div>

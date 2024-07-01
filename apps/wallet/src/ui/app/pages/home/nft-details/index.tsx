@@ -127,7 +127,7 @@ function NFTDetailsPage() {
 														mono
 														href={ownerExplorerLink}
 														text={formatAddress(ownerAddress)}
-														title="View on Sui Explorer"
+														title="View on Scalar Explorer"
 													/>
 												}
 											/>
@@ -143,7 +143,7 @@ function NFTDetailsPage() {
 														mono
 														href={objectExplorerLink || ''}
 														text={formatAddress(nftId)}
-														title="View on Sui Explorer"
+														title="View on Scalar Explorer"
 													/>
 												) : null
 											}

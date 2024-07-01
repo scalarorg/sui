@@ -25,7 +25,7 @@ export function useDeriveLedgerAccounts(options: UseDeriveLedgerAccountOptions) 
 		queryKey: ['derive-ledger-accounts'],
 		queryFn: () => {
 			if (!suiLedgerClient) {
-				throw new Error("The Sui application isn't open on a connected Ledger device");
+				throw new Error("The Scalar application isn't open on a connected Ledger device");
 			}
 			return deriveAccountsFromLedger(suiLedgerClient, numAccountsToDerive);
 		},

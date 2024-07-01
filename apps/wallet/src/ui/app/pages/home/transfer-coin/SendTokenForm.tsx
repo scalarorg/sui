@@ -267,7 +267,7 @@ export function SendTokenForm({
 									</div>
 									{!hasEnoughBalance && isValid ? (
 										<div className="mt-3">
-											<Alert>Insufficient SUI to cover transaction</Alert>
+											<Alert>Insufficient SCALAR to cover transaction</Alert>
 										</div>
 									) : null}
 

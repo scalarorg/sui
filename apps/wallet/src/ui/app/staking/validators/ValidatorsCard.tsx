@@ -108,7 +108,7 @@ export function ValidatorsCard() {
 						{hasInactiveValidatorDelegation ? (
 							<div className="mb-3">
 								<Alert>
-									Unstake SUI from the inactive validators and stake on an active validator to start
+									Unstake SCALAR from the inactive validators and stake on an active validator to start
 									earning rewards again.
 								</Alert>
 							</div>
@@ -173,7 +173,7 @@ export function ValidatorsCard() {
 							})
 						}
 						before={<Plus12 />}
-						text="Stake SUI"
+						text="Stake SCALAR"
 					/>
 				</Menu>
 			</BottomMenuLayout>

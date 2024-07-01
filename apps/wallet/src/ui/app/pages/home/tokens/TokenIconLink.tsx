@@ -55,7 +55,7 @@ export function TokenIconLink({
 		>
 			<div className="flex flex-col">
 				<Text variant="pBody" weight="semibold">
-					{totalActivePendingStake ? 'Currently Staked' : 'Stake and Earn SUI'}
+					{totalActivePendingStake ? 'Currently Staked' : 'Stake and Earn SCALAR'}
 				</Text>
 
 				{!!totalActivePendingStake && (

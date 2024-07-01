@@ -125,7 +125,7 @@ export function ValidatorFormDetail({ validatorAddress, unstake }: ValidatorForm
 						!unstake && (
 							<>
 								<Text variant="body" weight="medium" color="steel-darker">
-									Your Staked SUI
+									Your Staked SCALAR
 								</Text>
 
 								<StakeAmount balance={totalStake} variant="body" />
@@ -173,7 +173,7 @@ export function ValidatorFormDetail({ validatorAddress, unstake }: ValidatorForm
 									</Text>
 									<IconTooltip
 										noFullWidth
-										tip="The total SUI staked on the network by this validator and its delegators, to validate the network and earn rewards."
+										tip="The total SCALAR staked on the network by this validator and its delegators, to validate the network and earn rewards."
 									/>
 								</div>
 								<StakeAmount balance={totalValidatorStake} variant="body" />

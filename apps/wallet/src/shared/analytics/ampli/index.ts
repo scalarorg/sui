@@ -624,7 +624,7 @@ export class ClickedSocialSignInButton implements BaseEvent {
 }
 
 export class ClickedStakeSui implements BaseEvent {
-	event_type = 'clicked stake SUI';
+	event_type = 'clicked stake SCALAR';
 
 	constructor(public event_properties: ClickedStakeSuiProperties) {
 		this.event_properties = event_properties;
@@ -640,7 +640,7 @@ export class ClickedSwapCoin implements BaseEvent {
 }
 
 export class ClickedUnstakeSui implements BaseEvent {
-	event_type = 'clicked unstake SUI';
+	event_type = 'clicked unstake SCALAR';
 
 	constructor(public event_properties: ClickedUnstakeSuiProperties) {
 		this.event_properties = event_properties;
@@ -772,7 +772,7 @@ export class SentCollectibleFailed implements BaseEvent {
 }
 
 export class StakedSui implements BaseEvent {
-	event_type = 'staked SUI';
+	event_type = 'staked SCALAR';
 
 	constructor(public event_properties: StakedSuiProperties) {
 		this.event_properties = event_properties;
@@ -780,7 +780,7 @@ export class StakedSui implements BaseEvent {
 }
 
 export class StakedSuiFailed implements BaseEvent {
-	event_type = 'staked SUI (failed)';
+	event_type = 'staked SCALAR (failed)';
 
 	constructor(public event_properties: StakedSuiFailedProperties) {
 		this.event_properties = event_properties;
@@ -828,7 +828,7 @@ export class UnpinnedCoin implements BaseEvent {
 }
 
 export class UnstakedSui implements BaseEvent {
-	event_type = 'unstaked SUI';
+	event_type = 'unstaked SCALAR';
 
 	constructor(public event_properties: UnstakedSuiProperties) {
 		this.event_properties = event_properties;

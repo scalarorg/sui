@@ -322,7 +322,7 @@ function StakingCard() {
 									<div className="flex-1 mt-7.5">
 										<Collapsible title="Staking Rewards" defaultOpen>
 											<Text variant="pSubtitle" color="steel-dark" weight="normal">
-												Staked SUI starts counting as validator’s stake at the end of the Epoch in
+												Staked SCALAR starts counting as validator’s stake at the end of the Epoch in
 												which it was staked. Rewards are earned separately for each Epoch and become
 												available at the end of each Epoch.
 											</Text>

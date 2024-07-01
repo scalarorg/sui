@@ -173,7 +173,7 @@ export function StakeCard({
 
 					<div className="text-steel text-pBody opacity-0 group-hover:opacity-100">
 						<IconTooltip
-							tip="Object containing the delegated staked SUI tokens, owned by each delegator"
+							tip="Object containing the delegated staked SCALAR tokens, owned by each delegator"
 							placement="top"
 						/>
 					</div>

@@ -1,7 +1,7 @@
 {
-	"name": "sui-wallet",
+	"name": "scalar-wallet",
 	"private": true,
-	"description": "A wallet for Sui",
+	"description": "A wallet for Scalar",
 	"main": "./dist/ui.js",
 	"scripts": {
 		"build": "pnpm build:prod",

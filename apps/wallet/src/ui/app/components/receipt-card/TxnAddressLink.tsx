@@ -14,7 +14,7 @@ export function TxnAddressLink({ address }: TxnAddressLinkProps) {
 		<ExplorerLink
 			type={ExplorerLinkType.address}
 			address={address}
-			title="View on Sui Explorer"
+			title="View on Scalar Explorer"
 			showIcon={false}
 		>
 			{isValidSuiNSName(address) ? address : formatAddress(address)}

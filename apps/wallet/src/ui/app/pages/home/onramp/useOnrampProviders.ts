@@ -35,10 +35,10 @@ const ONRAMP_PROVIDER: OnrampProvider[] = [
 		},
 		getUrl: async (address) => {
 			const params = new URLSearchParams({
-				coinType: 'SUI',
+				coinType: 'SCALAR',
 				fiatType: 'USD',
 				fiatAmount: '100',
-				blockchain: 'SUI',
+				blockchain: 'SCALAR',
 				theme: 'dark',
 				walletAddress: address,
 				returnUrl: window.location.href,
@@ -62,7 +62,7 @@ const ONRAMP_PROVIDER: OnrampProvider[] = [
 				// If you want to test ETH values, you can use something like this:
 				// cryptoCurrencyCode: 'ETH',
 				// walletAddress: '0x000000000000000000000000000000000000dead',
-				cryptoCurrencyCode: 'SUI',
+				cryptoCurrencyCode: 'SCALAR',
 				walletAddress: address,
 				disableWalletAddressForm: 'true',
 				themeColor: '#6fbcf0',
@@ -97,7 +97,7 @@ const ONRAMP_PROVIDER: OnrampProvider[] = [
 			const params = new URLSearchParams({
 				theme: 'light',
 				colorCode: '#6fbcf0',
-				currencyCode: 'SUI',
+				currencyCode: 'SCALAR',
 				walletAddress: address,
 				environment: process.env.NODE_ENV === 'production' ? 'PRODUCTION' : 'STAGING',
 			});

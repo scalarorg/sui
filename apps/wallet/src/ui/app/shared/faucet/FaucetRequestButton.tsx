@@ -51,7 +51,7 @@ function FaucetRequestButton({ variant = 'primary', size = 'narrow' }: FaucetReq
 				});
 			}}
 			loading={mutation.isMutating}
-			text={`Request ${networkName} SUI Tokens`}
+			text={`Request ${networkName} SCALAR Tokens`}
 		/>
 	) : null;
 }

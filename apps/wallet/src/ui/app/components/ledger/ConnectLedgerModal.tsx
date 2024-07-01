@@ -57,7 +57,7 @@ export function ConnectLedgerModal({ onClose, onConfirm, onError }: ConnectLedge
 					</div>
 					<div className="break-words text-center mt-4.5">
 						<Text variant="pBodySmall" color="steel-darker" weight="normal">
-							Connect your ledger to your computer, unlock it, and launch the Sui app. Click
+							Connect your ledger to your computer, unlock it, and launch the Scalar app. Click
 							Continue when done.
 						</Text>
 						<div className="flex items-center justify-center mt-2">

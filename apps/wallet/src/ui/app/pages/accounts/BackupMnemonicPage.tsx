@@ -134,7 +134,7 @@ export function BackupMnemonicPage() {
 							variant="primary"
 							disabled={!passwordCopied && isOnboardingFlow}
 							to="/"
-							text="Open Sui Wallet"
+							text="Open Scalar Wallet"
 							after={<ArrowLeft16 className="text-pBodySmall font-normal rotate-135" />}
 						/>
 					</div>

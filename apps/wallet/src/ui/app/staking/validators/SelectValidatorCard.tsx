@@ -148,7 +148,7 @@ export function SelectValidatorCard() {
 					</div>
 					<div className="flex items-start w-full">
 						<Text variant="subtitle" weight="medium" color="steel-darker">
-							Select a validator to start staking SUI.
+							Select a validator to start staking SCALAR.
 						</Text>
 					</div>
 				</div>

@@ -50,7 +50,7 @@ export function getSuiApplicationErrorMessage(error: unknown) {
 		if (error.statusCode === StatusCodes.INS_NOT_SUPPORTED) {
 			return "Something went wrong. We're working on it!";
 		} else {
-			return 'Make sure the Sui app is open on your device.';
+			return 'Make sure the Scalar app is open on your device.';
 		}
 	}
 	return null;

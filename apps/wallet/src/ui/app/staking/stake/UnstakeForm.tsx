@@ -68,7 +68,7 @@ export function UnStakeForm({
 				footer={
 					<div className="flex gap-0.5 justify-between w-full">
 						<Text variant="pBodySmall" weight="medium" color="steel-darker">
-							Total unstaked SUI
+							Total unstaked SCALAR
 						</Text>
 						<div className="flex gap-0.5 ml-auto">
 							<Heading variant="heading4" weight="semibold" color="steel-darker" leading="none">

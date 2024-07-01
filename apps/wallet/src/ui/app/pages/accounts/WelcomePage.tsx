@@ -32,11 +32,11 @@ export function WelcomePage() {
 				</div>
 				<div className="text-center mx-auto mt-2">
 					<Heading variant="heading2" color="gray-90" as="h1" weight="bold">
-						Welcome to Sui Wallet
+						Welcome to Scalar Wallet
 					</Heading>
 					<div className="mt-2">
 						<Text variant="pBody" color="steel-dark" weight="medium">
-							Connecting you to the decentralized web and Sui network.
+							Connecting you to the decentralized web and Scalar network.
 						</Text>
 					</div>
 				</div>
