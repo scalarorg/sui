@@ -17,14 +17,55 @@ scalar() {
 	docker cp sui-execution ${CONTAINER_BUILDER}:/workspace
 	docker cp narwhal ${CONTAINER_BUILDER}:/workspace
 	docker cp external-crates ${CONTAINER_BUILDER}:/workspace
-	docker exec ${CONTAINER_BUILDER} cargo build --profile ${PROFILE} --bin scalar
-	docker cp ${CONTAINER_BUILDER}:/workspace/target/release/scalar ${REPO_ROOT}/scalar
+	declare -a bins=("scalar")
+	CMD_BINS="";
+	for bin in "${bins[@]}"
+	do
+		CMD_BINS="${CMD_BINS} --bin ${bin}"
+	done
+	docker exec ${CONTAINER_BUILDER} cargo build --profile ${PROFILE} ${CMD_BINS} 
+	for bin in "${bins[@]}"
+	do
+		docker cp ${CONTAINER_BUILDER}:/workspace/target/release/${bin} ${REPO_ROOT}/${bin}
+	done
 	docker build -f "$DOCKERFILE" "$REPO_ROOT" \
 		--build-arg GIT_REVISION="$GIT_REVISION" \
 		--build-arg BUILD_DATE="$BUILD_DATE" \
 		--build-arg PROFILE="$PROFILE" \
 		"$@"
-	rm ${REPO_ROOT}/scalar
+		
+	for bin in "${bins[@]}"
+	do
+		rm ${REPO_ROOT}/${bin}
+	done
+}
+indexer() {
+	docker-compose -f ${DIR}/docker-compose-builder.yaml up -d
+	cd ${REPO_ROOT}
+	BIN=sui-indexer
+	docker cp Cargo.toml ${CONTAINER_BUILDER}:/workspace
+	docker cp Cargo.lock ${CONTAINER_BUILDER}:/workspace
+	docker cp consensus ${CONTAINER_BUILDER}:/workspace
+	docker cp crates ${CONTAINER_BUILDER}:/workspace
+	docker cp sui-execution ${CONTAINER_BUILDER}:/workspace
+	docker cp narwhal ${CONTAINER_BUILDER}:/workspace
+	docker cp external-crates ${CONTAINER_BUILDER}:/workspace
+	docker exec ${CONTAINER_BUILDER} cargo build --profile ${PROFILE} --bin ${BIN} --features postgres-feature
+	docker cp ${CONTAINER_BUILDER}:/workspace/target/release/${BIN} ${REPO_ROOT}/${BIN}
+	docker build -f "$DIR/indexer.Dockerfile" "$REPO_ROOT" \
+		--build-arg GIT_REVISION="$GIT_REVISION" \
+		--build-arg BUILD_DATE="$BUILD_DATE" \
+		--build-arg PROFILE="$PROFILE" \
+		"$@"
+	rm ${REPO_ROOT}/${BIN}
+}
+
+explorer() {
+	echo "Building scalar explorer"
+	NETWORK=LOCAL
+	docker build -f "$DIR/explorer.Dockerfile" "$REPO_ROOT/docker/scalar-network" \
+	--build-arg NETWORK="$NETWORK" \
+	 "$@"
 }
 
 genesis() {
@@ -46,7 +87,8 @@ tools() {
 	docker cp sui-execution ${CONTAINER_BUILDER}:/workspace
 	docker cp narwhal ${CONTAINER_BUILDER}:/workspace
 	docker cp external-crates ${CONTAINER_BUILDER}:/workspace
-	declare -a bins=("sui-node" "sui-bridge" "sui-bridge-cli" "sui-proxy" "sui" "sui-faucet" "sui-analytics-indexer" "sui-cluster-test" "sui-tool")
+	declare -a bins=("sui-node" "sui-bridge" "sui-bridge-cli" "sui-proxy" "sui" "sui-faucet" "sui-cluster-test" "sui-tool")
+	# declare -a bins=("sui-node" "sui-bridge" "sui-bridge-cli" "sui-proxy" "sui" "sui-faucet" "sui-analytics-indexer" "sui-cluster-test" "sui-tool")
 	CMD_BINS="";
 	for bin in "${bins[@]}"
 	do

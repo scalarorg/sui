@@ -14,7 +14,7 @@ Follow document in scalaris repo
 
 ```
 cd docker/scalar-network
-./build.sh -t scalar/execution:latest
+./build_release.sh -t scalar/execution:latest
 
 ```
 
@@ -23,24 +23,28 @@ Build scalar within running container
 ```
 cd docker/scalar-network
 ./build.sh scalar -t scalar/execution:latest
-
+./build.sh indexer -t scalar/indexer:latest
 ```
-
-2. Build genesis (Required for first startup)
+2. Build explorer image
+```
+cd docker/scalar-network
+./build.sh explorer -t scalar/explorer:latest
+```
+3. Build genesis (Required for first startup)
 
 ```
 cd docker/scalar-network
 ./build.sh genesis
 ```
 
-3. Build sui tool
+4. Build sui tool
 
  ```
 cd docker/scalar-network
 ./build.sh tools -t scalar/sui-tools:latest
 
 ``` 
-4. run compose
+5. run compose
 
 ```
 (optional) `rm -r /tmp/scalar`
@@ -48,12 +52,6 @@ docker compose up
 ```
 
 # Demo step
-
-1. Init client
-```
-sui client
-cp $DIR/sui_config/genesis.blob /tmp/scalar/scalaris/genesis/files
-```
 
 
 **additional info**

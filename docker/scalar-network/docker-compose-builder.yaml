@@ -12,8 +12,18 @@ services:
     working_dir: /workspace
     command: sleep infinity
     restart: no
+    networks:
+      scalar-network-builder:
+        ipv4_address: 10.0.11.11
     logging:
       driver: "json-file"
       options:
         max-file: "10"
         max-size: "1g"
+
+networks:
+  scalar-network-builder:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.11.0/24

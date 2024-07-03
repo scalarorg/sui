@@ -1,5 +1,9 @@
 version: "3"
 
+volumes:
+  indexer-db:
+    name: scalar-indexer-db
+
 services:
   scalaris1:
     networks:
@@ -264,8 +268,69 @@ services:
         "/opt/scalar/config/fullnode.yaml"
       ]
     ports:
-      - 9000:9000
+      - 9001:9000
       - 9184:9184
+    restart: no
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "1g"
+  indexer_db:
+    container_name: scalar-indexer-db
+    image: postgres:14.9-alpine3.18
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${INDEXER_DB:-scalar-indexer}
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - indexer-db:/var/lib/postgresql/data
+    networks:
+      scalar-network:
+        ipv4_address: 10.0.10.26
+  indexer:
+    networks:
+      scalar-network:
+        ipv4_address: 10.0.10.27
+    image: scalar/indexer:latest
+    hostname: indexer
+    container_name: scalar-indexer
+    depends_on:
+      - indexer_db
+    environment:
+      - RUST_BACKTRACE=1
+      - RUST_LOG=debug,sui_core=debug,sui_network=debug,sui_node=debug,jsonrpsee=error
+      - RPC_WORKER_THREAD=12
+      - DB_POOL_SIZE=10
+      - DB_CONNECTION_TIMEOUT=30
+      - DB_STATEMENT_TIMEOUT=30
+    volumes:
+      - ./indexer.sh:/usr/local/bin/indexer.sh
+      - ${PATH_SCALAR_DB}/indexer:/opt/scalar/db:rw
+    command: [ "indexer.sh" ]
+    ports:
+      - 9000:9000
+    restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "1g"
+  explorer:
+    networks:
+      scalar-network:
+        ipv4_address: 10.0.10.28
+    build:
+      context: .
+      dockerfile: explorer.Dockerfile
+    image: scalar/explorer:latest
+    hostname: explorer
+    container_name: scalar-explorer
+    ports:
+      - 8080:80
     restart: no
     logging:
       driver: "json-file"
