@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 CONTAINER_BUILDER=scalar-builder
