@@ -63,8 +63,10 @@ indexer() {
 explorer() {
 	echo "Building scalar explorer"
 	NETWORK=LOCAL
+	DEVNET_RPC=http://192.168.1.254:9000
 	docker build -f "$DIR/explorer.Dockerfile" "$REPO_ROOT/docker/scalar-network" \
 	--build-arg NETWORK="$NETWORK" \
+	--build-arg DEVNET_RPC="$DEVNET_RPC" \
 	 "$@"
 }
 

@@ -16,6 +16,9 @@ RUN rm pnpm-lock.yaml
 RUN pnpm install
 WORKDIR "$WORKDIR/sui-explorer/apps/explorer"
 RUN echo "VITE_NETWORK=$NETWORK" > .env.production
+RUN echo "VITE_MAINNET_RPC_URL=$MAINNET_RPC\n" >> .env.production
+RUN echo "VITE_TESTNET_RPC_URL=$TESTNET_RPC\n" >> .env.production
+RUN echo "VITE_DEVNET_RPC_URL=$DEVNET_RPC\n" >> .env.production
 RUN pnpm run build
 
 # Production Image
