@@ -6,6 +6,9 @@ FROM node:20.12.2-bookworm AS builder
 ARG PROFILE=release
 ARG GIT_REVISION
 ARG NETWORK
+ARG DEVNET_RPC
+ARG MAINNET_RPC
+ARG TESTNET_RPC
 ENV GIT_REVISION=$GIT_REVISION
 RUN apt-get update && apt-get install -y git
 RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -

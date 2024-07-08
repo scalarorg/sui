@@ -28,7 +28,7 @@ cd docker/scalar-network
 2. Build explorer image
 ```
 cd docker/scalar-network
-./build.sh explorer -t scalar/explorer:latest
+./build.sh explorer {ENV}
 ```
 3. Build genesis (Required for first startup)
 
